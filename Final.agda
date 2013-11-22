@@ -82,8 +82,11 @@ module Final where
     `× : {x y : Units} → exp x → exp y → exp (x u× y)
     `÷ : {x y : Units} → exp x → exp y → exp (x u× (y ^-1))
 
-  x : exp(meter(2.0))
-  x = `+ (V (meter (1.0))) (V(second(1.0))) Refl
+--  x : exp(meter(2.0))
+--  x = `+ (V (meter (1.0))) (V(second(1.0))) Refl
+
+  x' : exp(meter(2.0))
+  x' = `+ (V (meter (1.0))) (V(meter(1.0))) Refl
 
 {-
   data eq : exp → Units → Set where
