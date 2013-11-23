@@ -38,17 +38,33 @@ module Final where
 -}  
 
   data Units : Set where
-    noU : Float → Units
-    meter   : Float → Units
-    gram  : Float → Units
-    second   : Float → Units
+    noU : Units
+    meter   : Units
+    gram  : Units
+    second   : Units
     _u×_   : Units → Units → Units
     _^-1   : Units → Units
 
-  reduce : Units → (Float → Units)
-  reduce x = {!!}
+  data ExpU : Units → Set where
+    lift : (u : Units) → ExpU u
+    _`+_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    _`-_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    _`×_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2)
+    _`÷_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2 ^-1)
 
+  data UF : Set where
+    _*_ : Float → Units → UF
 
+  test : UF
+  test = 1.0 * noU
+   
+  --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
+  --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
+
+ -- u-test : ExpU ((meter u× second ^-1) u× gram)
+--  u-test = {!((lift meter) `÷ (lift second)) u× gram!}
+
+{-
   Val : Units → Float
   Val (noU x) = x
   Val (meter x) = x
@@ -62,9 +78,9 @@ module Final where
   un (meter x) = meter
   un (gram x) = gram
   un (second x) = second 
-  un (x u× y) = reduce (un x 1.0 u× un y 1.0)
-  un (x ^-1) = {!!}
-  
+  un (x u× y) = {!!} --cancel (un x 1.0 u× un y 1.0)
+  un (x ^-1) = λ y → un x y ^-1
+  -}
 
 {-
   data operator : Set where
@@ -72,41 +88,18 @@ module Final where
     `× : operator
 -}
     
-  _``+_ : Units → Units → Units
-  _``+_ u1 u2 = {!!}
-  
+ -- _``+_ : Units → Units → Units
+ -- _``+_ u1 u2 = {!!}
+{-  
   data exp : Units → Set where
     V  : (y : Units) → exp y
     `+ : {x y : Units} → exp x → exp y → (un x) == (un y) → exp ((un x) (primFloatPlus (Val y) (Val x)))
     `- : {x y : Units} → exp x → exp y → (un x) == (un y) → exp ((un x) (primFloatMinus (Val y) (Val x)))
     `× : {x y : Units} → exp x → exp y → exp (x u× y)
     `÷ : {x y : Units} → exp x → exp y → exp (x u× (y ^-1))
-
+-}
 --  x : exp(meter(2.0))
 --  x = `+ (V (meter (1.0))) (V(second(1.0))) Refl
 
-  x' : exp(meter(2.0))
-  x' = `+ (V (meter (1.0))) (V(meter(1.0))) Refl
-
-{-
-  data eq : exp → Units → Set where
-    eN : eq ? ?
-    _`+_  : ? 
-    _`-_  : ?
-    _`×_  : ?
-    _`÷_  : ?   
--} 
-{-
-  Data : dim → Float → prefix → Units
-  Data scalar = noU
-  Data length = meter
-  Data mass = gram
-  Data time = second
-  Data (d `× d1) = {!!}
-  Data (d ^-1) = {!!}
--}
---  data NatU where
---    D : Nat → dim → NatD
-
---  S : {t x : Units} second → meter
--- S t = 
+--  x' : exp(meter(2.0))
+--  x' = `+ (V (meter (1.0))) (V(meter(1.0))) Refl
