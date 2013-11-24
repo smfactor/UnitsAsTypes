@@ -106,17 +106,6 @@ module Final where
   cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
 
 {-
-  cancel ([] , []) = ([] , [])
-  cancel ([] , bs) = ([] , bs)
-  cancel (ts , []) = (ts , [])
-  cancel (t :: ts , b :: bs) with checkEqual t b 
-  cancel (t :: ts , b :: bs) | True = cancel (ts , bs)
-  cancel (t :: ts , b :: bs) | False with cancel (t :: ts , bs)
-  cancel (t :: ts , b :: bs) | False | t1 , b1 with cancel (t1 , b :: b1)
-  cancel (t :: ts , b :: bs) | False | t1 , b1 | t2 , b2 = {!t2!} , {!b2!}
--}
-
-{-
   cancel (noU , noU) = noU
   cancel (noU , meter) = meter ^-1
   cancel (noU , gram) = gram ^-1
@@ -171,6 +160,7 @@ module Final where
   reduce : Units → Units 
   reduce x with makeFrac x
   reduce x | t , b with cancel t b
+  reduce x | t , b | t' , [] = listUtoU t'
   reduce x | t , b | t' , b' = listUtoU t' u× (listUtoU b' ^-1)
 
   v : Units
@@ -188,10 +178,11 @@ module Final where
   test4 : listUtoU [] u× (listUtoU [] ^-1) == noU u× (noU ^-1)
   test4 = Refl
 
-  testf : reduce v == (noU u× (noU ^-1))
-  testf = Refl
+--  testf1 : reduce v == (noU u× (noU ^-1))
+--  testf1 = Refl
   
-
+  testf : reduce v == noU
+  testf = Refl 
    
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
