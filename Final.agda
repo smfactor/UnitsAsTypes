@@ -53,7 +53,21 @@ module Final where
     _`÷_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2 ^-1)
 
   data UF : Set where
-    _*_ : Float → Units → UF
+    _of_ : Float → Units → UF
+  
+  val : UF → Float
+  val (f of u) = f 
+
+  uns : UF → Units
+  uns (f of u) = u
+
+  data Exp : UF → Set where
+    V    : (u : UF) → Exp u
+    _`+_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
+    _`-_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
+    _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of ((uns x) u× (uns y)))
+    _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of ((uns x) u× (uns y) ^-1))
+
 
   test : UF
   test = 1.0 * noU
