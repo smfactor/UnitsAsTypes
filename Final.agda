@@ -70,7 +70,7 @@ module Final where
 
 
   test : UF
-  test = 1.0 * noU
+  test = 1.0 of noU
 
   listUtoU : List Units → Units
   listUtoU [] = {!noU!}
@@ -89,9 +89,23 @@ module Final where
   checkEqual (x1 u× x2) (y1 u× y2) | False = False
   checkEqual x y = False
 
+  cancelS : Units → List Units → (Bool × List Units)
+  cancelS x [] = False , []
+  cancelS x (y :: ys) with checkEqual x y
+  cancelS x (y :: ys) | True = True , ys
+  cancelS x (y :: ys) | False with cancelS x  ys
+  cancelS x (y :: ys) | False | True , ys' = True , y :: ys'
+  cancelS x (y :: ys) | False | False , ys' = False , y :: ys'
 
-  --cancel should remove all tuplicates in the two lists
-  cancel : (List Units × List Units) → (List Units × List Units)
+  --cancel should remove all duplicates in the two lists
+  cancel : List Units → List Units → (List Units × List Units)
+  cancel [] b = [] , b
+  cancel (x :: ts) b with cancelS x b
+  cancel (x :: ts) b | True , b' = cancel ts b'
+  cancel (x :: ts) b | False , _ with cancel ts b
+  cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
+
+{-
   cancel ([] , []) = ([] , [])
   cancel ([] , bs) = ([] , bs)
   cancel (ts , []) = (ts , [])
@@ -100,6 +114,7 @@ module Final where
   cancel (t :: ts , b :: bs) | False with cancel (t :: ts , bs)
   cancel (t :: ts , b :: bs) | False | t1 , b1 with cancel (t1 , b :: b1)
   cancel (t :: ts , b :: bs) | False | t1 , b1 | t2 , b2 = {!t2!} , {!b2!}
+-}
 
 {-
   cancel (noU , noU) = noU
@@ -154,8 +169,9 @@ module Final where
   makeFrac x = x :: [] , noU :: []
 
   reduce : Units → Units 
-  reduce x with cancel (makeFrac x)
-  reduce x | t , b = listUtoU t u× (listUtoU b ^-1)
+  reduce x with makeFrac x
+  reduce x | t , b with cancel t b
+  reduce x | t , b | t' , b' = listUtoU t u× (listUtoU b ^-1)
 
    
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
