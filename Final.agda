@@ -27,50 +27,50 @@ module Final where
     _^-1   : dim → dim
 -}
 {-
-  data prefix : Set where
-    G : prefix
-    M : prefix
-    k : prefix
-    c : prefix
-    m : prefix
-    μ : prefix
-    O : prefix
+data prefix : Set where
+  G : prefix
+  M : prefix
+  k : prefix
+  c : prefix
+  m : prefix
+  μ : prefix
+  O : prefix
 -}  
 
-  data Units : Set where
-    noU : Units
-    meter   : Units
-    gram  : Units
-    second   : Units
-    _u×_   : Units → Units → Units
-    _^-1   : Units → Units
+data Units : Set where
+  noU : Units
+  meter   : Units
+  gram  : Units
+  second   : Units
+  _u×_   : Units → Units → Units
+  _^-1   : Units → Units
 
-  data ExpU : Units → Set where
-    lift : (u : Units) → ExpU u
-    _`+_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    _`-_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    _`×_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2)
-    _`÷_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2 ^-1)
+data ExpU : Units → Set where
+  lift : (u : Units) → ExpU u
+  _`+_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+  _`-_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+  _`×_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2)
+  _`÷_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (u1 u× u2 ^-1)
 
-  data UF : Set where
-    _of_ : Float → Units → UF
-  
-  val : UF → Float
-  val (f of u) = f 
+data UF : Set where
+  _of_ : Float → Units → UF
 
-  uns : UF → Units
-  uns (f of u) = u
+val : UF → Float
+val (f of u) = f 
 
-  data Exp : UF → Set where
-    V    : (u : UF) → Exp u
-    _`+_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
-    _`-_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
-    _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of ((uns x) u× (uns y)))
-    _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of ((uns x) u× (uns y) ^-1))
+uns : UF → Units
+uns (f of u) = u
+
+data Exp : UF → Set where
+  V    : (u : UF) → Exp u
+  _`+_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
+  _`-_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
+  _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of ((uns x) u× (uns y)))
+  _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of ((uns x) u× (uns y) ^-1))
 
 
-  test : UF
-  test = 1.0 of noU
+test : UF
+test = 1.0 of noU
 
   listUtoU : List Units → Units
   listUtoU [] = noU
@@ -183,6 +183,9 @@ module Final where
   
   testf : reduce v == noU
   testf = Refl 
+  
+  test-e-1 : {uf : UF} → Exp uf
+  test-e-1 {uf} = V uf
    
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
