@@ -57,6 +57,92 @@ module Final where
 
   test : UF
   test = 1.0 * noU
+
+  listUtoU : List Units → Units
+  listUtoU [] = {!noU!}
+  listUtoU (x :: xs) = x u× listUtoU xs
+
+  checkEqual : Units → Units → Bool
+  checkEqual noU noU = True
+  checkEqual meter meter = True
+  checkEqual gram gram = True
+  checkEqual second second = True
+  checkEqual (x ^-1) (y ^-1) = checkEqual x y
+  checkEqual (x1 u× x2) (y1 u× y2) with checkEqual x1 y1
+  checkEqual (x1 u× x2) (y1 u× y2) | True with checkEqual x2 y2
+  checkEqual (x1 u× x2) (y1 u× y2) | True | True = True
+  checkEqual (x1 u× x2) (y1 u× y2) | True | False = False
+  checkEqual (x1 u× x2) (y1 u× y2) | False = False
+  checkEqual x y = False
+
+
+  --cancel should remove all tuplicates in the two lists
+  cancel : (List Units × List Units) → (List Units × List Units)
+  cancel ([] , []) = ([] , [])
+  cancel ([] , bs) = ([] , bs)
+  cancel (ts , []) = (ts , [])
+  cancel (t :: ts , b :: bs) with checkEqual t b 
+  cancel (t :: ts , b :: bs) | True = cancel (ts , bs)
+  cancel (t :: ts , b :: bs) | False with cancel (t :: ts , bs)
+  cancel (t :: ts , b :: bs) | False | t1 , b1 with cancel (t1 , b :: b1)
+  cancel (t :: ts , b :: bs) | False | t1 , b1 | t2 , b2 = {!t2!} , {!b2!}
+
+{-
+  cancel (noU , noU) = noU
+  cancel (noU , meter) = meter ^-1
+  cancel (noU , gram) = gram ^-1
+  cancel (noU , second) = second  ^-1
+  cancel (noU , b u× b1) = b u× b1
+  cancel (noU , b ^-1) = b
+  cancel (meter , noU) = meter
+  cancel (meter , meter) = noU
+  cancel (meter , gram) = meter u× (gram ^-1)
+  cancel (meter , second) = meter u× (second ^-1)
+  cancel (meter , b u× b1) = {!!}
+  cancel (meter , b ^-1) = {!!}
+  cancel (gram , noU) = gram
+  cancel (gram , meter) = gram u× (meter ^-1)
+  cancel (gram , gram) = noU
+  cancel (gram , second) = gram u× (second ^-1)
+  cancel (gram , b u× b1) = {!!}
+  cancel (gram , b ^-1) = {!!}
+  cancel (second , noU) = second
+  cancel (second , meter) = second u× (meter ^-1)
+  cancel (second , gram) = second u× (gram ^-1)
+  cancel (second , second) = noU
+  cancel (second , b u× b1) = {!!}
+  cancel (second , b ^-1) = {!!}
+  cancel (t u× t1 , noU) = t u× t1
+  cancel (t u× t1 , meter) = {!!}
+  cancel (t u× t1 , gram) = {!!}
+  cancel (t u× t1 , second) = {!!}
+  cancel (t u× t1 , b u× b1) = {!!}
+  cancel (t u× t1 , b ^-1) = {!!}
+  cancel (t ^-1 , noU) = {!!}
+  cancel (t ^-1 , meter) = {!!}
+  cancel (t ^-1 , gram) = {!!}
+  cancel (t ^-1 , second) = {!!}
+  cancel (t ^-1 , b u× b1) = {!!}
+  cancel (t ^-1 , b ^-1) = {!!}
+-}
+
+  makeFrac : Units → List Units × List Units
+  makeFrac (x ^-1 u× y ^-1) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = bx ++ by , tx ++ ty
+  makeFrac (x ^-1 u× y) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = bx ++ ty , tx ++ by
+  makeFrac (x u× y ^-1) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = tx ++ by , bx ++ ty
+  makeFrac (x u× y) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = tx ++ ty , bx ++ by
+  makeFrac (x ^-1) with makeFrac x 
+  ... | t , b = b , t
+  makeFrac x = x :: [] , noU :: []
+
+  reduce : Units → Units 
+  reduce x with cancel (makeFrac x)
+  reduce x | t , b = listUtoU t u× (listUtoU b ^-1)
+
    
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
