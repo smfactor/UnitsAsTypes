@@ -140,16 +140,82 @@ module Final where
     V    : (u : UF) → Exp u
     _`+_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
     _`-_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
-    _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of ((uns x) u× (uns y)))
-    _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of ((uns x) u× (uns y) ^-1))
-
+    _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
+    _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
 
   test : UF
   test = 1.0 of noU
- 
-    
-  test-e-1 : {uf : UF} → Exp uf
-  test-e-1 {uf} = V uf
+
+  test5 : Exp (1.0 of noU)
+  test5 = V test
+
+  d1 : UF
+  d1 = 30.0 of meter
+  d2 : UF
+  d2 = 10.0 of meter
+  ac : UF
+  ac = 5.0 of ((meter u× (second ^-1)) u× (second ^-1))
+  t : UF
+  t = 0.828427 of second
+  vi : UF
+  vi = 20.0 of (meter u× second ^-1)
+
+  test6 : Exp (30.0 of meter)
+  test6 = {!(V d2) `+ (((V vi) `× (V t)) `+ ((V ac) `× ((V t) `× (V t))))!}
+{-
+ listUtoU : List Units → Units
+  listUtoU [] = noU
+  listUtoU (x :: xs) = x u× listUtoU xs
+
+  checkEqual : Units → Units → Bool
+  checkEqual noU noU = True
+  checkEqual meter meter = True
+  checkEqual gram gram = True
+  checkEqual second second = True
+  checkEqual (x ^-1) (y ^-1) = checkEqual x y
+  checkEqual (x1 u× x2) (y1 u× y2) with checkEqual x1 y1
+  checkEqual (x1 u× x2) (y1 u× y2) | True with checkEqual x2 y2
+  checkEqual (x1 u× x2) (y1 u× y2) | True | True = True
+  checkEqual (x1 u× x2) (y1 u× y2) | True | False = False
+  checkEqual (x1 u× x2) (y1 u× y2) | False = False
+  checkEqual x y = False
+
+  cancelS : Units → List Units → (Bool × List Units)
+  cancelS x [] = False , []
+  cancelS x (y :: ys) with checkEqual x y
+  cancelS x (y :: ys) | True = True , ys
+  cancelS x (y :: ys) | False with cancelS x  ys
+  cancelS x (y :: ys) | False | True , ys' = True , y :: ys'
+  cancelS x (y :: ys) | False | False , ys' = False , y :: ys'
+
+  --cancel should remove all duplicates in the two lists
+  cancel : List Units → List Units → (List Units × List Units)
+  cancel [] b = [] , b
+  cancel (x :: ts) b with cancelS x b
+  cancel (x :: ts) b | True , b' = cancel ts b'
+  cancel (x :: ts) b | False , _ with cancel ts b
+  cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
+
+
+  makeFrac : Units → List Units × List Units
+  makeFrac (x ^-1 u× y ^-1) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = bx ++ by , tx ++ ty
+  makeFrac (x ^-1 u× y) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = bx ++ ty , tx ++ by
+  makeFrac (x u× y ^-1) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = tx ++ by , bx ++ ty
+  makeFrac (x u× y) with makeFrac x | makeFrac y
+  ... | tx , bx | ty , by = tx ++ ty , bx ++ by
+  makeFrac (x ^-1) with makeFrac x 
+  ... | t , b = b , t
+  makeFrac x = x :: [] , noU :: []
+
+  reduce : Units → Units 
+  reduce x with makeFrac x
+  reduce x | t , b with cancel t b
+  reduce x | t , b | t' , [] = listUtoU t'
+  reduce x | t , b | t' , b' = listUtoU t' u× (listUtoU b' ^-1)
+-}
  {-
     cancel (noU , noU) = noU
     cancel (noU , meter) = meter ^-1
