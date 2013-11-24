@@ -73,7 +73,7 @@ module Final where
   test = 1.0 of noU
 
   listUtoU : List Units → Units
-  listUtoU [] = {!noU!}
+  listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
 
   checkEqual : Units → Units → Bool
@@ -171,7 +171,26 @@ module Final where
   reduce : Units → Units 
   reduce x with makeFrac x
   reduce x | t , b with cancel t b
-  reduce x | t , b | t' , b' = listUtoU t u× (listUtoU b ^-1)
+  reduce x | t , b | t' , b' = listUtoU t' u× (listUtoU b' ^-1)
+
+  v : Units
+  v = (meter u× (meter ^-1))
+
+  test1 : makeFrac v == (meter :: noU :: [] , noU :: meter :: [])
+  test1 = Refl
+
+  test2 : cancel (meter :: noU :: []) (noU :: meter :: []) == ([] , [])
+  test2 = Refl
+
+  test3 : listUtoU [] == noU
+  test3 = Refl
+
+  test4 : listUtoU [] u× (listUtoU [] ^-1) == noU u× (noU ^-1)
+  test4 = Refl
+
+  testf : reduce v == (noU u× (noU ^-1))
+  testf = Refl
+  
 
    
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
