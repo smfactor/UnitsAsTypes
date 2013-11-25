@@ -4,16 +4,15 @@ module Final where
   
   postulate
     Int    : Set
-    Float  : Set
 
-  {-# BUILTIN INTEGER Int #-}
-  {-# BUILTIN FLOAT Float #-}
+  {-# BUILTIN INTEGER Int  #-}
 
   primitive
-    primFloatPlus    : Float → Float → Float
-    primFloatMinus   : Float → Float → Float
-    primFloatTimes   : Float → Float → Float
-    primFloatDiv     : Float → Float → Float
+    primIntegerPlus    : Int → Int → Int
+    primIntegerMinus   : Int → Int → Int
+    primIntegerTimes   : Int → Int → Int
+    primIntegerDiv     : Int → Int → Int
+    primNatToInteger   : Nat → Int
 
 --  open Nat using (_+_)
   open List using (_++_ ; [_] ; ++-assoc)
@@ -136,9 +135,9 @@ module Final where
     `÷ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2 ^-1))
 
   data UF : Set where
-    _of_ : Float → Units → UF
+    _of_ : Int → Units → UF
 
-  val : UF → Float
+  val : UF → Int
   val (f of u) = f 
 
   uns : UF → Units
@@ -146,52 +145,47 @@ module Final where
 
   data Exp : UF → Set where
     V    : (u : UF) → Exp u
-    `+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
-    `- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
-    `× : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
-    `÷ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
+    `+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerPlus (val x) (val y)) of (uns y))
+    `- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerMinus (val x) (val y)) of (uns y))
+    `× : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
+    `÷ : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
+
+  one : Int
+  one = primNatToInteger 1
+  two : Int 
+  two = primNatToInteger 2
+  three : Int
+  three = primNatToInteger 3
+  four : Int
+  four = primNatToInteger 4
 
   test : UF
-  test = 1.0 of noU
+  test = one of noU
 
-  test5 : Exp (1.0 of noU)
+  test5 : Exp (one of noU)
   test5 = V test
   
-  test+ : Exp (2.0 of noU)
+  test+ : Exp (two of noU)
   test+ = `+ test test (V test) Refl 
   
   meter1 : UF
-  meter1 = 2.5 of meter
+  meter1 = three of meter
   meter2 : UF
-  meter2 = 1.0 of meter
+  meter2 = one of meter
 
-  test- : Exp (1.5 of meter)
+  test- : Exp (two of meter)
   test- = `- meter1 meter2 (V meter2) Refl
   
   second1 : UF
-  second1 = 2.0 of second
+  second1 = one of second
   second2 : UF
-  second2 = 2.5 of second
+  second2 = two of second
 
- -- test× : Exp (5.0 of second)
- -- test× = ``× {!second1!} second2 (V second2)
+  test× : Exp (four of second)
+  test× = `× {!second2!} second2 (V second2)
 
   --test×2 : Exp (1.0 of (meter u× second ^-1))
   --test×2 = `÷ {!meter1!} second2 (V second2)
-
-  d1 : UF
-  d1 = 30.0 of meter
-  d2 : UF
-  d2 = 10.0 of meter
-  ac : UF
-  ac = 5.0 of ((meter u× (second ^-1)) u× (second ^-1))
-  t : UF
-  t = 0.828427 of second
-  vi : UF
-  vi = 20.0 of (meter u× second ^-1)
-
-  test6 : Exp (30.0 of meter)
-  test6 = {!(V d2) `+ (((V vi) `× (V t)) `+ ((V ac) `× ((V t) `× (V t))))!}
 
  {-
     cancel (noU , noU) = noU
