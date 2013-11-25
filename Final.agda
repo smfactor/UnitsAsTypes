@@ -146,10 +146,10 @@ module Final where
 
   data Exp : UF → Set where
     V    : (u : UF) → Exp u
-    ``+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
-    ``- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
-    ``× : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
-    ``÷ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
+    `+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
+    `- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
+    `× : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
+    `÷ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
 
   test : UF
   test = 1.0 of noU
@@ -158,15 +158,26 @@ module Final where
   test5 = V test
   
   test+ : Exp (2.0 of noU)
-  test+ = ``+ test test (V test) Refl 
+  test+ = `+ test test (V test) Refl 
   
   meter1 : UF
   meter1 = 2.5 of meter
   meter2 : UF
   meter2 = 1.0 of meter
 
- -- test- : Exp (0.0 of meter)
- -- test- = ``- {!meter1!} meter2 (V meter2) {!!}
+  test- : Exp (1.5 of meter)
+  test- = `- meter1 meter2 (V meter2) Refl
+  
+  second1 : UF
+  second1 = 2.0 of second
+  second2 : UF
+  second2 = 2.5 of second
+
+ -- test× : Exp (5.0 of second)
+ -- test× = ``× {!second1!} second2 (V second2)
+
+  --test×2 : Exp (1.0 of (meter u× second ^-1))
+  --test×2 = `÷ {!meter1!} second2 (V second2)
 
   d1 : UF
   d1 = 30.0 of meter
