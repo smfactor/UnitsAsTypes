@@ -38,12 +38,16 @@ module Final where
   -}  
 
   data Units : Set where
-    noU : Units
+    noU     : Units
     meter   : Units
-    gram  : Units
-    second   : Units
-    _u×_   : Units → Units → Units
-    _^-1   : Units → Units
+    gram    : Units
+    second  : Units
+    ampere  : Units
+    kelvin  : Units
+    candela : Units
+    mol     : Units
+    _u×_    : Units → Units → Units
+    _^-1    : Units → Units
 
 
   listUtoU : List Units → Units
@@ -55,6 +59,10 @@ module Final where
   checkEqual meter meter = True
   checkEqual gram gram = True
   checkEqual second second = True
+  checkEqual ampere ampere = True
+  checkEqual kelvin kelvin = True
+  checkEqual candela candela = True
+  checkEqual mol mol = True
   checkEqual (x ^-1) (y ^-1) = checkEqual x y
   checkEqual (x1 u× x2) (y1 u× y2) with checkEqual x1 y1
   checkEqual (x1 u× x2) (y1 u× y2) | True with checkEqual x2 y2
