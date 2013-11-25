@@ -130,10 +130,10 @@ module Final where
 
   data ExpU : Units → Set where
     lift : (u : Units) → ExpU u
-    _`+_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    _`-_ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    _`×_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2))
-    _`÷_ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2 ^-1))
+    `+ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    `- : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    `× : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2))
+    `÷ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2 ^-1))
 
   data UF : Set where
     _of_ : Float → Units → UF
@@ -146,16 +146,27 @@ module Final where
 
   data Exp : UF → Set where
     V    : (u : UF) → Exp u
-    _`+_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
-    _`-_ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
-    _`×_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
-    _`÷_ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
+    ``+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatPlus (val x) (val y)) of (uns y))
+    ``- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primFloatMinus (val x) (val y)) of (uns y))
+    ``× : (x : UF) → (y : UF) → Exp y → Exp ((primFloatTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
+    ``÷ : (x : UF) → (y : UF) → Exp y → Exp ((primFloatDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
 
   test : UF
   test = 1.0 of noU
 
   test5 : Exp (1.0 of noU)
   test5 = V test
+  
+  test+ : Exp (2.0 of noU)
+  test+ = ``+ test test (V test) Refl 
+  
+  meter1 : UF
+  meter1 = 2.5 of meter
+  meter2 : UF
+  meter2 = 1.0 of meter
+
+ -- test- : Exp (0.0 of meter)
+ -- test- = ``- {!meter1!} meter2 (V meter2) {!!}
 
   d1 : UF
   d1 = 30.0 of meter
