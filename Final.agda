@@ -48,7 +48,10 @@ module Final where
     _u×_    : Units → Units → Units
     _^-1    : Units → Units
 
-
+  data Imperial : Set where
+    foot : Imperial
+    pound : Imperial
+    
   listUtoU : List Units → Units
   listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
@@ -129,13 +132,21 @@ module Final where
 
   data ExpU : Units → Set where
     lift : (u : Units) → ExpU u
-    `+ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    `- : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
-    `× : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2))
-    `÷ : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2 ^-1))
+    `+   : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    `-   : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
+    `×   : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2))
+    `÷   : (u1 : Units) → (u2 : Units) → ExpU u2 → ExpU (reduce (u1 u× u2 ^-1))
 
   data UF : Set where
     _of_ : Int → Units → UF
+  
+  data UFI : Set where
+    _of_ : Int → Imperial → UFI
+  
+ --conversions must be inexact for ints
+  I-to-SI : UFI → UF
+  I-to-SI (v of foot) = primIntegerDiv v (primNatToInteger 3) of meter
+  I-to-SI (v of pound) = primIntegerTimes v (primNatToInteger 454) of gram
 
   val : UF → Int
   val (f of u) = f 
@@ -144,11 +155,11 @@ module Final where
   uns (f of u) = u
 
   data Exp : UF → Set where
-    V    : (u : UF) → Exp u
-    `+ : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerPlus (val x) (val y)) of (uns y))
-    `- : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerMinus (val x) (val y)) of (uns y))
-    `× : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
-    `÷ : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
+    V     : (u : UF) → Exp u
+    `+    : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerPlus (val x) (val y)) of (uns y))
+    `-    : (x : UF) → (y : UF) → Exp y → (uns x == uns y) → Exp ((primIntegerMinus (val x) (val y)) of (uns y))
+    `×    : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerTimes (val x) (val y)) of (reduce((uns x) u× (uns y))))
+    `÷    : (x : UF) → (y : UF) → Exp y → Exp ((primIntegerDiv (val x) (val y)) of (reduce ((uns x) u× (uns y) ^-1)))
 
   one : Int
   one = primNatToInteger 1
