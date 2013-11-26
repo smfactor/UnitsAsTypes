@@ -72,10 +72,12 @@ module Final where
   test : UF
   test = 1.0 of noU
 
+  --need to remove noU if there are other units present
   listUtoU : List Units → Units
   listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
 
+  --need case for ^-1 ^-1 ?
   checkEqual : Units → Units → Bool
   checkEqual noU noU = True
   checkEqual meter meter = True
@@ -183,7 +185,12 @@ module Final where
   
   testf : reduce v == noU
   testf = Refl 
-   
+
+  v' : Units
+  v' = (meter u× second) u× ((second u× second) ^-1)
+
+--  testv' : reduce v == meter u× (second ^-1)
+--  testv' = Refl
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
 
