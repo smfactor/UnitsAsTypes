@@ -176,16 +176,16 @@ module Final where
   prefixed (v of (kilo ◂ u)) = primFloatTimes v 1000.0 of u
   prefixed (v of (hecto ◂ u)) = primFloatTimes v 100.0 of u
   prefixed (v of (deca ◂ u)) = primFloatTimes v 10.0 of u
-  prefixed (v of (deci ◂ u)) = {!primFloatTimes v 1.0e−1 of u!}
-  prefixed (v of (centi ◂ u)) = {!primFloatTimes v 1.0e−2 of u!}
-  prefixed (v of (milli ◂ u)) = {!primFloatTimes v 1.0e−3 of u!}
-  prefixed (v of (micro ◂ u)) = {!primFloatTimes v 1.0e−6 of u!}
-  prefixed (v of (nano ◂ u)) = {!primFloatTimes v 1.0e−9 of u!}
-  prefixed (v of (pico ◂ u)) = {!primFloatTimes v 1.0e−12 of u!}
-  prefixed (v of (femto ◂ u)) = {!primFloatTimes v 1.0e−15 of u!}
-  prefixed (v of (atto ◂ u)) = {!primFloatTimes v 1.0e−18 of u!}
-  prefixed (v of (zepto ◂ u)) = {!primFloatTimes v 1.0e−21 of u!}
-  prefixed (v of (yocto ◂ u)) = {!primFloatTimes v 1.0e−24 of u !}
+  prefixed (v of (deci ◂ u)) = primFloatTimes v (primFloatMinus 0.0 10.0) of u
+  prefixed (v of (centi ◂ u)) = primFloatTimes v (primFloatMinus 0.0 100.0) of u
+  prefixed (v of (milli ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1000.0) of u
+  prefixed (v of (micro ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1000000.0) of u
+  prefixed (v of (nano ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e9) of u
+  prefixed (v of (pico ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e12) of u
+  prefixed (v of (femto ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e15) of u
+  prefixed (v of (atto ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e18) of u
+  prefixed (v of (zepto ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e21) of u
+  prefixed (v of (yocto ◂ u)) = primFloatTimes v (primFloatMinus 0.0 1.0e24) of u
 
 
   Imp-to-SI : (x : UFI) → UF
