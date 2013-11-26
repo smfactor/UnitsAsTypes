@@ -26,17 +26,29 @@ module Final where
       _`×_   : dim → dim → dim
       _^-1   : dim → dim
   -}
-  {-
+  
   data prefix : Set where
-    G : prefix
-    M : prefix
-    k : prefix
-    c : prefix
-    m : prefix
-    μ : prefix
-    O : prefix
-  -}  
-
+    yotta : prefix
+    zetta : prefix
+    exa   : prefix
+    peta  : prefix
+    tera  : prefix
+    giga  : prefix
+    mega  : prefix
+    kilo  : prefix
+    hecto : prefix
+    deca  : prefix
+    deci  : prefix
+    centi : prefix
+    milli : prefix
+    micro : prefix
+    nano  : prefix
+    pico  : prefix
+    femto : prefix
+    atto  : prefix
+    zepto : prefix
+    yocto : prefix
+    
   data Units : Set where
     noU     : Units
     meter   : Units
@@ -144,6 +156,37 @@ module Final where
 
   data UFI : Set where
     _of_ : Float → Imperial → UFI
+
+  data Metric : Set where
+    _◂_ : prefix → Units → Metric   --\t
+  
+  data pUF : Set where
+    _of_ : Float → Metric → pUF
+  ttt : Float
+  ttt = 1.0e−1
+
+  prefixed : (u : pUF) → UF
+  prefixed (v of (yotta ◂ u)) = primFloatTimes v 1.0e24 of u
+  prefixed (v of (zetta ◂ u)) = primFloatTimes v 1.0e21 of u
+  prefixed (v of (exa ◂ u)) = primFloatTimes v 1.0e18 of u
+  prefixed (v of (peta ◂ u)) = primFloatTimes v 1.0e15 of u
+  prefixed (v of (tera ◂ u)) = primFloatTimes v 1.0e12 of u
+  prefixed (v of (giga ◂ u)) = primFloatTimes v 1.0e9 of u
+  prefixed (v of (mega ◂ u)) = primFloatTimes v 1000000.0 of u
+  prefixed (v of (kilo ◂ u)) = primFloatTimes v 1000.0 of u
+  prefixed (v of (hecto ◂ u)) = primFloatTimes v 100.0 of u
+  prefixed (v of (deca ◂ u)) = primFloatTimes v 10.0 of u
+  prefixed (v of (deci ◂ u)) = {!primFloatTimes v 1.0e−1 of u!}
+  prefixed (v of (centi ◂ u)) = {!primFloatTimes v 1.0e−2 of u!}
+  prefixed (v of (milli ◂ u)) = {!primFloatTimes v 1.0e−3 of u!}
+  prefixed (v of (micro ◂ u)) = {!primFloatTimes v 1.0e−6 of u!}
+  prefixed (v of (nano ◂ u)) = {!primFloatTimes v 1.0e−9 of u!}
+  prefixed (v of (pico ◂ u)) = {!primFloatTimes v 1.0e−12 of u!}
+  prefixed (v of (femto ◂ u)) = {!primFloatTimes v 1.0e−15 of u!}
+  prefixed (v of (atto ◂ u)) = {!primFloatTimes v 1.0e−18 of u!}
+  prefixed (v of (zepto ◂ u)) = {!primFloatTimes v 1.0e−21 of u!}
+  prefixed (v of (yocto ◂ u)) = {!primFloatTimes v 1.0e−24 of u !}
+
 
   Imp-to-SI : (x : UFI) → UF
   Imp-to-SI (v of foot) = primFloatTimes v 0.3048 of meter
