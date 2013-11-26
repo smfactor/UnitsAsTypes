@@ -49,6 +49,10 @@ module Final where
     _u×_    : Units → Units → Units
     _^-1    : Units → Units
 
+  data Imperial : Set where
+    foot   : Imperial
+    pound  : Imperial
+
 
   listUtoU : List Units → Units
   listUtoU [] = noU
@@ -137,6 +141,13 @@ module Final where
 
   data UF : Set where
     _of_ : Float → Units → UF
+
+  data UFI : Set where
+    _of_ : Float → Imperial → UFI
+
+  Imp-to-SI : (x : UFI) → UF
+  Imp-to-SI (v of foot) = primFloatTimes v 0.3048 of meter
+  Imp-to-SI (v of pound) = primFloatTimes v 453.592 of gram
 
   val : UF → Float
   val (f of u) = f 
