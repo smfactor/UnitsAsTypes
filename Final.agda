@@ -160,6 +160,10 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
+  --proof of reduce
+
+  
+
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
 
@@ -200,6 +204,20 @@ module Final where
     `- : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (primFloatMinus x y) U
     `× : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatTimes x y) (reduce (U1 u× U2))
     `÷ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatDiv x y) (reduce (U1 u× U2 ^-1))
+
+  valUF' : {x : Float} {U : Units} → UF' x U → Float
+  valUF' {x} {U} (V .x .U) = x
+  valUF' (`+ x1 x2) = primFloatPlus (valUF' x1) (valUF' x2)
+  valUF' (`- x1 x2) = primFloatMinus (valUF' x1) (valUF' x2)
+  valUF' (`× x1 x2) = primFloatTimes (valUF' x1) (valUF' x2)
+  valUF' (`÷ x1 x2) = primFloatDiv (valUF' x1) (valUF' x2)
+
+  unitsUF' : {x : Float} {U : Units} → UF' x U → Units
+  unitsUF' {x} {U} (V .x .U) = U
+  unitsUF' (`+ x1 x2) = unitsUF' x1
+  unitsUF' (`- x1 x2) = unitsUF' x1
+  unitsUF' (`× x1 x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
+  unitsUF' (`÷ x1 x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
 
   data UFI : Set where
     _of_ : Float → Imperial → UFI
@@ -260,8 +278,20 @@ module Final where
   displacement : {t' : Float} → (UF' t' second) → (UF' (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
   displacement t = `× (`× (`× (V 0.5 noU) g) t) t
 
-  x : UF' (primFloatMinus 0.0 4.9) meter
+  x : UF' (valUF' (displacement (V 1.0 second))) (unitsUF' (displacement (V 1.0 second)))
   x = displacement (V 1.0 second)
+
+  vx : Float
+  vx = valUF' x
+
+  testvx : vx == primFloatMinus 0.0 4.9
+  testvx = Refl
+  
+  ux : Units
+  ux = unitsUF' x
+
+  testux : ux == meter
+  testux = Refl
 
 
   data Exp : UF → Set where
