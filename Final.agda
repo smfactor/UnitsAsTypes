@@ -89,6 +89,7 @@ module Final where
   checkEqual (x1 u× x2) (y1 u× y2) | False = False
   checkEqual x y = False
 
+  -- Bool represents whether a cancelation was made
   cancelS : Units → List Units → (Bool × List Units)
   cancelS x [] = False , []
   cancelS x (y :: ys) with checkEqual x y
@@ -117,19 +118,25 @@ module Final where
   ... | tx , bx | ty , by = tx ++ ty , bx ++ by
   makeFrac (x ^-1) with makeFrac x 
   ... | t , b = b , t
-  makeFrac x = x :: [] , noU :: []
+  makeFrac x = x :: [] , []
+
+  filternoU : Units → Units
+  filternoU (x u× noU) = filternoU x
+  filternoU (x u× x1) = filternoU x u× filternoU x1
+  filternoU (x ^-1) = filternoU x ^-1
+  filternoU x = x
 
   reduce : Units → Units 
   reduce x with makeFrac x
   reduce x | t , b with cancel t b
   reduce x | t , b | t' , [] = listUtoU t'
-  reduce x | t , b | t' , b' = listUtoU t' u× (listUtoU b' ^-1)
+  reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
 
   v : Units
   v = (meter u× (meter ^-1))
 
-  test1 : makeFrac v == (meter :: noU :: [] , noU :: meter :: [])
-  test1 = Refl
+--  test1 : makeFrac v == (meter :: noU :: [] , noU :: meter :: [])
+--  test1 = Refl
 
   test2 : cancel (meter :: noU :: []) (noU :: meter :: []) == ([] , [])
   test2 = Refl
@@ -139,15 +146,15 @@ module Final where
   test3 = Refl
   test4 : listUtoU [] u× (listUtoU [] ^-1) == noU u× (noU ^-1)
   test4 = Refl
-
-  --  testf1 : reduce v == (noU u× (noU ^-1))
-  --  testf1 = Refl
     
   testf : reduce v == noU
   testf = Refl 
 
   v' : Units
   v' = (meter u× second) u× ((second u× second) ^-1)
+
+  test1 : reduce v' == meter u× (second) ^-1
+  test1 = Refl
 
 --  testv' : reduce v == meter u× (second ^-1)
 --  testv' = Refl
@@ -258,8 +265,8 @@ module Final where
   second2 : UF
   second2 = 2.5 of second
 
- -- test× : Exp (5.0 of second)
- -- test× = ``× {!second1!} second2 (V second2)
+  test× : Exp ({!!} of (second u× second))
+  test× = {!`× second1 second2 (V second2)!}
 
   --test×2 : Exp (1.0 of (meter u× second ^-1))
   --test×2 = `÷ {!meter1!} second2 (V second2)
@@ -277,42 +284,3 @@ module Final where
 
   test6 : Exp (30.0 of meter)
   test6 = {!(V d2) `+ (((V vi) `× (V t)) `+ ((V ac) `× ((V t) `× (V t))))!}
-
- {-
-    cancel (noU , noU) = noU
-    cancel (noU , meter) = meter ^-1
-    cancel (noU , gram) = gram ^-1
-    cancel (noU , second) = second  ^-1
-    cancel (noU , b u× b1) = b u× b1
-    cancel (noU , b ^-1) = b
-    cancel (meter , noU) = meter
-    cancel (meter , meter) = noU
-    cancel (meter , gram) = meter u× (gram ^-1)
-    cancel (meter , second) = meter u× (second ^-1)
-    cancel (meter , b u× b1) = {!!}
-    cancel (meter , b ^-1) = {!!}
-    cancel (gram , noU) = gram
-    cancel (gram , meter) = gram u× (meter ^-1)
-    cancel (gram , gram) = noU
-    cancel (gram , second) = gram u× (second ^-1)
-    cancel (gram , b u× b1) = {!!}
-    cancel (gram , b ^-1) = {!!}
-    cancel (second , noU) = second
-    cancel (second , meter) = second u× (meter ^-1)
-    cancel (second , gram) = second u× (gram ^-1)
-    cancel (second , second) = noU
-    cancel (second , b u× b1) = {!!}
-    cancel (second , b ^-1) = {!!}
-    cancel (t u× t1 , noU) = t u× t1
-    cancel (t u× t1 , meter) = {!!}
-    cancel (t u× t1 , gram) = {!!}
-    cancel (t u× t1 , second) = {!!}
-    cancel (t u× t1 , b u× b1) = {!!}
-    cancel (t u× t1 , b ^-1) = {!!}
-    cancel (t ^-1 , noU) = {!!}
-    cancel (t ^-1 , meter) = {!!}
-    cancel (t ^-1 , gram) = {!!}
-    cancel (t ^-1 , second) = {!!}
-    cancel (t ^-1 , b u× b1) = {!!}
-    cancel (t ^-1 , b ^-1) = {!!}
-  -}
