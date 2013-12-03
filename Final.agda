@@ -122,6 +122,7 @@ module Final where
 
   filternoU : Units → Units
   filternoU (x u× noU) = filternoU x
+  filternoU (noU u× x) = filternoU x
   filternoU (x u× x1) = filternoU x u× filternoU x1
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
@@ -129,7 +130,7 @@ module Final where
   reduce : Units → Units 
   reduce x with makeFrac x
   reduce x | t , b with cancel t b
-  reduce x | t , b | t' , [] = listUtoU t'
+  reduce x | t , b | t' , [] = filternoU (listUtoU t')
   reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
 
   v : Units
@@ -153,11 +154,12 @@ module Final where
   v' : Units
   v' = (meter u× second) u× ((second u× second) ^-1)
 
-  test1 : reduce v' == meter u× (second) ^-1
-  test1 = Refl
+  testv' : reduce v' == meter u× (second ^-1)
+  testv' = Refl
 
---  testv' : reduce v == meter u× (second ^-1)
---  testv' = Refl
+  testv : reduce v == noU
+  testv = Refl
+
   --  _`×_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× u₂)
   --  _`÷_ : {u₁ u₂ : ExpU} → (ExpU u₁) → (ExpU u₂) → ExpU (u₁ u× (u₂ ^-1))
 
@@ -181,7 +183,7 @@ module Final where
   un (x u× y) = {!!} --cancel (un x 1.0 u× un y 1.0)
   un (x ^-1) = λ y → un x y ^-1
   -}
-
+  
   data ExpU : Units → Set where
     lift : (u : Units) → ExpU u
     `+ : (u1 : Units) → (u2 : Units) → ExpU u2 → u1 == u2 → ExpU u2
@@ -191,6 +193,13 @@ module Final where
 
   data UF : Set where
     _of_ : Float → Units → UF
+
+  data UF' : Float → Units → Set where
+    V  : (x : Float) (U : Units) → UF' x U
+    `+ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (primFloatPlus x y) U
+    `- : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (primFloatMinus x y) U
+    `× : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatTimes x y) (reduce (U1 u× U2))
+    `÷ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatDiv x y) (reduce (U1 u× U2 ^-1))
 
   data UFI : Set where
     _of_ : Float → Imperial → UFI
@@ -235,6 +244,25 @@ module Final where
 
   uns : UF → Units
   uns (f of u) = u
+
+  V1 : UF' 1.0 meter
+  V1 = V 1.0 meter
+
+  V2 : UF' 2.0 meter
+  V2 = `+ V1 V1
+
+  V3 : UF' 1.0 (meter u× meter)
+  V3 = `× V1 V1
+
+  g : UF' (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
+  g = V (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
+
+  displacement : {t' : Float} → (UF' t' second) → (UF' (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
+  displacement t = `× (`× (`× (V 0.5 noU) g) t) t
+
+  x : UF' (primFloatMinus 0.0 4.9) meter
+  x = displacement (V 1.0 second)
+
 
   data Exp : UF → Set where
     V    : (u : UF) → Exp u
