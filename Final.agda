@@ -18,6 +18,18 @@ module Final where
 --  open Nat using (_+_)
   open List using (_++_ ; [_] ; ++-assoc)
   
+  _f+_ : Float → Float → Float
+  x f+ y = primFloatPlus x y
+ 
+  _f−_ : Float → Float → Float --\minus
+  x f− y = primFloatMinus x y
+
+  _f×_ : Float → Float → Float --\times
+  x f× y = primFloatTimes x y
+
+  _f÷_ : Float → Float → Float --\div
+  x f÷ y = primFloatDiv x y
+ 
   ~_ : Float → Float
   ~ x = primFloatMinus 0.0 x
 
