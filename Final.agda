@@ -18,6 +18,11 @@ module Final where
 --  open Nat using (_+_)
   open List using (_++_ ; [_] ; ++-assoc)
   
+  ~_ : Float → Float
+  ~ x = primFloatMinus 0.0 x
+
+  infix 10 ~_
+
   data prefix : Set where
     yotta : prefix
     zetta : prefix
@@ -52,6 +57,10 @@ module Final where
     _u×_    : Units → Units → Units
     _^-1    : Units → Units
 
+  infixl 10 _u×_
+  
+  infixl 11 _^-1
+    
   data Imperial : Set where
     foot   : Imperial
     pound  : Imperial
@@ -136,7 +145,7 @@ module Final where
   test3 : listUtoU [] == noU
 
   test3 = Refl
-  test4 : listUtoU [] u× (listUtoU [] ^-1) == noU u× (noU ^-1)
+  test4 : (listUtoU [] u× (listUtoU [] ^-1)) == (noU u× (noU ^-1))
   test4 = Refl
     
   testf : reduce v == noU
@@ -145,7 +154,7 @@ module Final where
   v' : Units
   v' = (meter u× second) u× ((second u× second) ^-1)
 
-  testv' : reduce v' == meter u× (second ^-1)
+  testv' : (reduce v') == (meter u× (second ^-1))
   testv' = Refl
 
   testv : reduce v == noU
@@ -155,13 +164,40 @@ module Final where
   prefixed = {!!}
 
   data UF : Units → Set where
-    V  : (U : Units) → UF U
-    `+ : {U : Units} → UF U → UF U → UF U
-    `- : {U : Units} → UF U → UF U → UF U
-    `× : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
-    `÷ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+    V    : (U : Units) → UF U
+    _`+_ : {U : Units} → UF U → UF U → UF U
+    _`-_ : {U : Units} → UF U → UF U → UF U
+    _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
+    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
 
+  infixl 8 _`×_
 
+  infixl 8 _`÷_
+
+  infixl 4 _`+_
+
+  infixl 4 _`-_
+
+  tm/s² : UF (meter u× ((second u× second) ^-1))
+  tm/s² = V meter `÷ (V second `× V second)
+
+  {-
+  +UF : {u : Units} → Float → Float → UF u → Float
+  +UF v1 v2 uf = primFloatPlus v1 v2
+
+  -UF : {u : Units} → Float → Float → UF u → Float
+  -UF v1 v2 uf = primFloatMinus v1 v2
+
+  --×UF : {u : Units} → Float → Float → UF u1 → UF u2 → F
+
+ 
+  compute : {u1 u2 u3 : Units} → Float → Float → UF u1 → UF u2 → Float × (V u3)
+  compute {u} v v2 (V .u) = {!!}
+  compute v v2 (uf `+ uf₁) = {!compute !}
+  compute v v2 (uf `- uf₁) = {!!}
+  compute v v2 (uf `× uf₁) = {!!}
+  compute v v2 (uf `÷ uf₁) = {!!}
+-}
 {-
   valUF : {x : Float} {U : Units} → UF U → Float
   valUF {x} {U} (V .U) = x
