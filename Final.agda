@@ -151,28 +151,33 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
-  data UF' : Float → Units → Set where
-    V  : (x : Float) (U : Units) → UF' x U
-    `+ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (primFloatPlus x y) U
-    `- : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (primFloatMinus x y) U
-    `× : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatTimes x y) (reduce (U1 u× U2))
-    `÷ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (primFloatDiv x y) (reduce (U1 u× U2 ^-1))
+  prefixed : (v : Float) → (p : prefix) → Float
+  prefixed = {!!}
 
-  valUF' : {x : Float} {U : Units} → UF' x U → Float
-  valUF' {x} {U} (V .x .U) = x
-  valUF' (`+ x1 x2) = primFloatPlus (valUF' x1) (valUF' x2)
-  valUF' (`- x1 x2) = primFloatMinus (valUF' x1) (valUF' x2)
-  valUF' (`× x1 x2) = primFloatTimes (valUF' x1) (valUF' x2)
-  valUF' (`÷ x1 x2) = primFloatDiv (valUF' x1) (valUF' x2)
+  data UF : Units → Set where
+    V  : (U : Units) → UF U
+    `+ : {U : Units} → UF U → UF U → UF U
+    `- : {U : Units} → UF U → UF U → UF U
+    `× : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
+    `÷ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
 
-  unitsUF' : {x : Float} {U : Units} → UF' x U → Units
-  unitsUF' {x} {U} (V .x .U) = U
-  unitsUF' (`+ x1 x2) = unitsUF' x1
-  unitsUF' (`- x1 x2) = unitsUF' x1
-  unitsUF' (`× x1 x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
-  unitsUF' (`÷ x1 x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
 
 {-
+  valUF : {x : Float} {U : Units} → UF U → Float
+  valUF {x} {U} (V .U) = x
+  valUF (`+ x1 x2) = primFloatPlus (valUF x1) (valUF x2)
+  valUF (`- x1 x2) = primFloatMinus (valUF x1) (valUF x2)
+  valUF (`× x1 x2) = primFloatTimes (valUF x1) (valUF x2)
+  valUF (`÷ x1 x2) = primFloatDiv (valUF x1) (valUF x2)
+
+  unitsUF : {x : Float} {U : Units} → UF x U → Units
+  unitsUF {x} {U} (V .x .U) = U
+  unitsUF (`+ x1 x2) = unitsUF x1
+  unitsUF (`- x1 x2) = unitsUF x1
+  unitsUF (`× x1 x2) = reduce ((unitsUF x1) u× (unitsUF x2))
+  unitsUF (`÷ x1 x2) = reduce ((unitsUF x1) u× (unitsUF x2))
+
+
   data UFI : Set where
     _of_ : Float → Imperial → UFI
 
@@ -181,10 +186,10 @@ module Final where
   
   data pUF : Set where
     _of_ : Float → Metric → pUF
--}
-{-
-  prefixed : (u : pUF) → UF
-  prefixed (v of (yotta ◂ u)) = primFloatTimes v 1.0e24 of u
+
+
+  prefixed : {v : Float} {u : Units} (puf : pUF) → UF v u
+  prefixed (v of (yotta ◂ u)) = V (primFloatTimes v 1.0e24) u
   prefixed (v of (zetta ◂ u)) = primFloatTimes v 1.0e21 of u
   prefixed (v of (exa ◂ u)) = primFloatTimes v 1.0e18 of u
   prefixed (v of (peta ◂ u)) = primFloatTimes v 1.0e15 of u
@@ -209,37 +214,38 @@ module Final where
   Imp-to-SI : (x : UFI) → UF
   Imp-to-SI (v of foot) = primFloatTimes v 0.3048 of meter
   Imp-to-SI (v of pound) = primFloatTimes v 453.592 of gram
--}
 
-  V1 : UF' 1.0 meter
+
+  V1 : UF 1.0 meter
   V1 = V 1.0 meter
 
-  V2 : UF' 2.0 meter
+  V2 : UF 2.0 meter
   V2 = `+ V1 V1
 
-  V3 : UF' 1.0 (meter u× meter)
+  V3 : UF 1.0 (meter u× meter)
   V3 = `× V1 V1
 
-  g : UF' (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
+  g : UF (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
   g = V (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
 
-  displacement : {t' : Float} → (UF' t' second) → (UF' (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
+  displacement : {t' : Float} → (UF t' second) → (UF (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
   displacement t = `× (`× (`× (V 0.5 noU) g) t) t
 
-  x : UF' (valUF' (displacement (V 1.0 second))) (unitsUF' (displacement (V 1.0 second)))
+  x : UF (valUF (displacement (V 1.0 second))) (unitsUF (displacement (V 1.0 second)))
   x = displacement (V 1.0 second)
 
   vx : Float
-  vx = valUF' x
+  vx = valUF x
 
   testvx : vx == primFloatMinus 0.0 4.9
   testvx = Refl
   
   ux : Units
-  ux = unitsUF' x
+  ux = unitsUF x
 
   testux : ux == meter
   testux = Refl
 
-  x1 : UF' (primFloatMinus 0.0 4.9) meter
+  x1 : UF (primFloatMinus 0.0 4.9) meter
   x1 = displacement (V 1.0 second)
+-}
