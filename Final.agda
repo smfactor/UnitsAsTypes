@@ -292,13 +292,8 @@ module Final where
   V1 : UF 1.0 meter
   V1 = V 1.0 meter
 
-<<<<<<< Updated upstream
   V2 : UF 2.0 meter
   V2 = `+ V1 V1
-=======
-  V2 : UF' 3.0 meter
-  V2 = V1 `+ (V1 `+ V1)
->>>>>>> Stashed changes
 
   V3 : UF 1.0 (meter u× meter)
   V3 = `× V1 V1
