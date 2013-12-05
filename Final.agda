@@ -353,10 +353,16 @@ module ReduceUnits' where
 
 
 
---  data Reduced : Set where
---    UTrans  : ?
---    URefl   : ?
---    USim    : ?
---    UCong   : ?
---    UnoU-1  : (noU ^-1) == noU
+  data Reduced : Set where
+    UTrans  : ?
+    URefl   : ?
+    USim    : ?
+    UCong   : ?
+    UnoU-1  : (noU ^-1) == noU
+-- more cases here if u is not next to u^-1?
+    Ucancel1 : {u : Units} u u× (u ^-1) == noU
+    Ucancel2 : {u : Units} (u ^-1) u× u == noU
+    Uid1     : {u : Units} u u× noU == u
+    Uid2     : {u : Units} noU u× u == u
+
 -}
