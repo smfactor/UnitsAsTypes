@@ -99,6 +99,8 @@ module Final where
   checkEqual (x1 u× x2) (y1 u× y2) | True | True = True
   checkEqual (x1 u× x2) (y1 u× y2) | True | False = False
   checkEqual (x1 u× x2) (y1 u× y2) | False = False
+  checkEqual x ((y ^-1) ^-1) = checkEqual x y
+  checkEqual ((x ^-1) ^-1) y = checkEqual x y
   checkEqual x y = False
 
   -- Bool represents whether a cancelation was made
@@ -193,6 +195,9 @@ module Final where
  -- tm/s² : UF (meter u× ((second u× second) ^-1))
  -- tm/s² = V meter `÷ (V second `× V second)
 
+  _uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
+  _uf×_ = {!!}
+  
   _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
   (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
 
@@ -208,10 +213,6 @@ module Final where
   displacement : Float → UF second → Float × (UF meter)
   displacement t uf = {!uf!}
 
-
-
-  displacement' : Float → Float → Float
-  displacement' = {!compute (meter !}
 
   {-
   --compute as a function that takes a UF and creates correspond float ops
@@ -232,6 +233,11 @@ module Final where
   _e×_ : Exp → Exp → Exp
   (v1 of u1) e× (v2 of u2) = (v1 f× v2) of (u1 `× u2)
 -}
+--  g : UF (~ 9.8) (meter u× ((second u× second) ^-1))
+--  g = V (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
+
+--  displacement : Float → (UF second) → Float × (UF meter)
+--  displacement t U = {!!} --`× (`× (`× (V 0.5 noU) g) t) t
 
   {-
   displacement : {t' : Float} → (UF t' second) → (UF (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
