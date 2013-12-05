@@ -193,6 +193,20 @@ module Final where
   tm/s² : UF (meter u× ((second u× second) ^-1))
   tm/s² = V meter `÷ (V second `× V second)
 
+  _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
+  (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
+
+  _uf-_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
+  (v1 , uf1) uf- (v2 , uf2) = v1 f− v2 , uf1 `- uf2
+
+  displacement : Float → UF second → Float × (UF meter)
+  displacement t uf = {!uf!}
+
+
+
+  displacement' : Float → Float → Float
+  displacement' = {!compute (meter !}
+
   {-
   --compute as a function that takes a UF and creates correspond float ops
   compute : {u : Units} → UF u → (Float → Float → Float)
