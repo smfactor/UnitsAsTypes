@@ -177,7 +177,7 @@ module Final where
   prefixed = {!!}
 
   data UF : Units → Set where
-    V    : (U : Units) → UF U
+    V    : (f : Float) → (U : Units) → UF U
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
@@ -192,7 +192,7 @@ module Final where
   infixl 4 _`-_
 
   tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V meter `÷ (V second `× V second)
+  tm/s² = V 9.8 (meter u× (second u× second) ^-1)
   
   _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
   (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
@@ -206,8 +206,11 @@ module Final where
 --  _uf÷_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `÷ (UF u2))
 --  (v1 , uf1) uf÷ (v2 , uf2) =  v1 f÷ v2 , uf1 `÷ uf2
 
-  displacement : Float → UF second → Float × (UF meter)
-  displacement t uf = {!uf!}
+  displacement : UF second → UF meter
+  displacement t = {!!}
+
+--  x : Float
+--  x = compute displacement 6.0
 
 
   {-
