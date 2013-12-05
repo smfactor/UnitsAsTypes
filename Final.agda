@@ -141,7 +141,7 @@ module Final where
 
 
   data UF : Units → Set where
-    V    : (U : Units) → UF U
+    V    : (f : Float) → (U : Units) → UF U
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
@@ -152,16 +152,34 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 
+  --use UF to make dsl with rules ... plop down float and float is in units
+  --function construct UF expression then compute it
+  tm : UF second
+  tm = V 1.0 second 
 
-
-
-
-
+  t-m : UF second → UF meter
+  t-m tm = {!!}
 
   tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V meter `÷ (V second `× V second)
-  
+  tm/s² = V (~ 4.9) meter `÷ (V 2.0 second `× V 2.0 second)
 
+  
+  compute : {u : Units} → UF u → Float
+  compute {u} (V f .u) = f
+  compute (x `+ x₁) = compute x f+ compute x₁
+  compute (x `- x₁) = compute x f− compute x₁
+  compute (x `× x₁) = compute x f× compute x₁
+  compute (x `÷ x₁) = compute x f÷ compute x₁
+
+  dis : Float → Float
+  dis s = compute (V (~ 4.9) meter `÷ (V s second `× V s second))
+
+--if doing
+  --dont leav unitland
+  --whole program is of type UF 
+  --runtimes system actually runs compuation
+
+    --give anything that compute uf second and will compute uf meter
 
 
 
