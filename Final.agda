@@ -197,6 +197,16 @@ module Final where
 
   _uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
   _uf×_ = {!!}
+  
+  _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
+  (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
+
+  _uf-_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
+  (v1 , uf1) uf- (v2 , uf2) = v1 f− v2 , uf1 `- uf2
+
+  displacement : Float → UF second → Float × (UF meter)
+  displacement t uf = {!uf!}
+
 
   {-
   --compute as a function that takes a UF and creates correspond float ops
