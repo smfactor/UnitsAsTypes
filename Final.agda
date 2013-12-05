@@ -194,6 +194,31 @@ module Final where
   tm/s² = V meter `÷ (V second `× V second)
 
   {-
+  --compute as a function that takes a UF and creates correspond float ops
+  compute : {u : Units} → UF u → (Float → Float → Float)
+  compute {u} (V .u) = λ x y → x
+  compute (uf1 `+ uf2) = _f+_
+  compute (uf1 `- uf2) = _f−_
+  compute (uf1 `× uf2) = _f×_
+  compute (uf1 `÷ uf2) = _f÷_
+-}
+  
+{-
+  --tried created data type of float and UF again, doesn't really work
+  data Exp : Set where
+    _of_ : {u : Units} → Float → UF u → Exp
+  _e+_ : Exp → Exp → Exp
+  (v1 of u1) e+ (v2 of  u2) = {!(v1 f+ v2) of (u1 `+ u2)!} --can't enfor u1 == u2
+  _e×_ : Exp → Exp → Exp
+  (v1 of u1) e× (v2 of u2) = (v1 f× v2) of (u1 `× u2)
+-}
+
+  {-
+  displacement : {t' : Float} → (UF t' second) → (UF (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
+  displacement t = `× (`× (`× (V 0.5 noU) g) t) t
+
+  x : UF (valUF (displacement (V 1.0 second))) (unitsUF (displacement (V 1.0 second)))
+  x = displacement (V 1.0 second)
   +UF : {u : Units} → Float → Float → UF u → Float
   +UF v1 v2 uf = primFloatPlus v1 v2
 
