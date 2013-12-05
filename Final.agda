@@ -152,24 +152,27 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 
-<<<<<<< HEAD
-  tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V 9.8 (meter u× (second u× second) ^-1)
-  
+  g : UF (meter u× ((second u× second) ^-1))
+  g = V (~ 9.8) (meter u× (second u× second) ^-1)
+
+{-  
   _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
   (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
 
   _uf-_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
   (v1 , uf1) uf- (v2 , uf2) = v1 f× v2 , uf1 `- uf2
 
---  _uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
---  (v1 , uf1) uf× (v2 , uf2) =  v1 f− v2 , uf1 `× uf2
+  _uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
+  (v1 , uf1) uf× (v2 , uf2) =  v1 f− v2 , uf1 `× uf2
 
---  _uf÷_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `÷ (UF u2))
---  (v1 , uf1) uf÷ (v2 , uf2) =  v1 f÷ v2 , uf1 `÷ uf2
+  _uf÷_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `÷ (UF u2))
+  (v1 , uf1) uf÷ (v2 , uf2) =  v1 f÷ v2 , uf1 `÷ uf2
+-}
 
   displacement : UF second → UF meter
-  displacement t = {!!}
+  displacement t = V 0.5 noU `× g `× t `× t
+
+
 
 --  x : Float
 --  x = compute displacement 6.0
@@ -183,7 +186,7 @@ module Final where
   t-m tm = {!!}
 
   tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V (~ 4.9) meter `÷ (V 2.0 second `× V 2.0 second)
+  tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
 
   
   compute : {u : Units} → UF u → Float
@@ -203,7 +206,8 @@ module Final where
 
     --give anything that compute uf second and will compute uf meter
 
-
+  dis1sec : Float
+  dis1sec = compute (displacement (V 1.0 second))
 
 
   _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
@@ -222,7 +226,7 @@ module Final where
 
 
 
-
+{-
   data UF' : Float → Units → Set where
     `V    : (v : Float) → (U : Units) → UF' v U
     _``+_ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (x f+ y) U
@@ -252,7 +256,7 @@ module Final where
 
   x : UF' (valUF' (displacement (`V 1.0 second))) (unitsUF' (displacement (`V 1.0 second)))
   x = displacement (`V 1.0 second)
-
+-}
 {-
 module ReduceUnits' where
   Units' : Set
