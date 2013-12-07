@@ -51,9 +51,49 @@ module Final where
   infixl 10 _u×_
   infixl 11 _^-1    
 
+  data Prefix : Set where
+    yotta : Prefix
+    zetta : Prefix
+    exa   : Prefix
+    peta  : Prefix
+    tera  : Prefix
+    giga  : Prefix
+    mega  : Prefix
+    kilo  : Prefix
+    hecto : Prefix
+    deca  : Prefix
+    deci  : Prefix 
+    centi : Prefix
+    milli : Prefix
+    micro : Prefix
+    nano  : Prefix
+    pico  : Prefix
+    femto : Prefix
+    atto  : Prefix
+    zepto : Prefix
+    yocto : Prefix
 
-
-
+  prefixed : Float → Prefix → Float
+  prefixed f yotta = f f× 1.0e24
+  prefixed f zetta = f f× 1.0e21
+  prefixed f exa = f f× 1.0e18
+  prefixed f peta = f f× 1.0e15
+  prefixed f tera = f f× 1.0e12
+  prefixed f giga = f f× 1.0e9
+  prefixed f mega = f f× 1000000.0
+  prefixed f kilo = f f× 1000.0
+  prefixed f hecto = f f× 100.0
+  prefixed f deca = f f× 10.0
+  prefixed f deci = f f÷ 10.0
+  prefixed f centi = f f÷ 100.0
+  prefixed f milli = f f÷ 1000.0
+  prefixed f micro = f f÷ 1000000.0
+  prefixed f nano = f f÷ 1.0e9
+  prefixed f pico = f f÷ 1.0e12
+  prefixed f femto = f f÷ 1.0e15
+  prefixed f atto = f f÷ 1.0e18
+  prefixed f zepto = f f÷ 1.0e21
+  prefixed f yocto = f f÷ 1.0e24
 
 
 
@@ -142,6 +182,7 @@ module Final where
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
+    P    : (f : Float) → (p : Prefix) → (U : Units) → UF U
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
@@ -155,20 +196,6 @@ module Final where
   g : UF (meter u× ((second u× second) ^-1))
   g = V (~ 9.8) (meter u× (second u× second) ^-1)
 
-{-  
-  _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
-  (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
-
-  _uf-_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
-  (v1 , uf1) uf- (v2 , uf2) = v1 f× v2 , uf1 `- uf2
-
-  _uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
-  (v1 , uf1) uf× (v2 , uf2) =  v1 f− v2 , uf1 `× uf2
-
-  _uf÷_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `÷ (UF u2))
-  (v1 , uf1) uf÷ (v2 , uf2) =  v1 f÷ v2 , uf1 `÷ uf2
--}
-
   displacement : UF second → UF meter
   displacement t = V 0.5 noU `× g `× t `× t
 
@@ -179,25 +206,37 @@ module Final where
   
   --use UF to make dsl with rules ... plop down float and float is in units
   --function construct UF expression then compute it
-  tm : UF second
-  tm = V 1.0 second 
-
-  t-m : UF second → UF meter
-  t-m tm = {!!}
-
-  tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
+  
 
   
   compute : {u : Units} → UF u → Float
   compute {u} (V f .u) = f
+  compute {u} (P f p .u) = prefixed f p
   compute (x `+ x₁) = compute x f+ compute x₁
   compute (x `- x₁) = compute x f− compute x₁
   compute (x `× x₁) = compute x f× compute x₁
   compute (x `÷ x₁) = compute x f÷ compute x₁
 
-  dis : Float → Float
-  dis s = compute (V (~ 4.9) meter `÷ (V s second `× V s second))
+
+
+  tm/s² : UF (meter u× ((second u× second) ^-1))
+  tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
+
+
+
+
+  mm : UF meter
+  mm = V 1.0 meter
+  ss : UF second
+  ss = V 1.0 second
+
+
+
+
+
+
+
+
 
 --if doing
   --dont leav unitland
@@ -209,18 +248,6 @@ module Final where
   dis1sec : Float
   dis1sec = compute (displacement (V 1.0 second))
 
-
-  _uf+_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
-  (v1 , uf1) uf+ (v2 , uf2) = v1 f+ v2 , uf1 `+ uf2
-
-  _uf-_ : {u : Units} → Float × UF u → Float × UF u → Float × UF u
-  (v1 , uf1) uf- (v2 , uf2) = v1 f× v2 , uf1 `- uf2
-
-  --_uf×_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `× (UF u2))
-  --(v1 , uf1) uf× (v2 , uf2) =  v1 f− v2 , uf1 `× uf2
-
---  _uf÷_ : {u1 u2 : Units} → Float × UF u1 → Float × UF u2 → Float × ((UF u1) `÷ (UF u2))
---  (v1 , uf1) uf÷ (v2 , uf2) =  v1 f÷ v2 , uf1 `÷ uf2
 
 
 
