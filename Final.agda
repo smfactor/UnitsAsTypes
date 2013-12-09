@@ -375,3 +375,37 @@ module ReduceUnits' where
     Uid2     : {u : Units} noU u× u == u
 
 -}
+ {- Library for example of code -}
+  module Projectile where
+    cos : UF noU → UF noU
+    cos = {!!}
+    sin : UF noU → UF noU
+    sin = {!!}
+    --sqrt : {u : Units} → UF u → UF u
+    --sqrt = {!!}
+    g' : UF (meter u× ((second u× second) ^-1))
+    g' = {! V (~ 9.8) (meter u× (second u× second) ^-1) !}
+
+    h-dist-trav : UF (meter u× (second ^-1))   --velocity
+                  → UF noU                               --angle
+                  → UF meter                             -- initial height
+                  → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                  → UF meter                                -- distance traveled
+    h-dist-trav v θ y₀ g = {! ((v `× (cos θ) `÷ g) `× (v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× !}
+
+    vtest : UF (meter u× second ^-1)
+    vtest = {! (V 1.0 meter) `÷ (V 1.0 second) !}
+    v2test : UF (meter u× meter u× (second u× second) ^-1)
+    v2test = vtest `× vtest
+    gytest : UF (meter u× meter u× (second u× second) ^-1)
+    gytest = {! (V 2.0 noU) `× (V (~ 9.8) (meter u× (second u× second) ^-1)) `× (V 1.0 meter) !}
+    v2gy : UF (meter u× meter u× (second u× second) ^-1)
+    v2gy = v2test `+ gytest
+
+
+
+
+    sqrt-test : (UF (meter u× second ^-1))
+    sqrt-test = {!sqrt v2gy!}
+
+
