@@ -241,7 +241,7 @@ module Final where
   Uroot (x :: xs) | Some y | Some z = Some (y ++ z)
   Uroot (x :: xs) | Some y | None = None
 
-  rt : Units → Units
+  rt : Units → Maybe Units
   rt x with makeFrac x
   rt x | t , b with countUnits t | countUnits b
   rt x | t , b | ts | bs with Uroot ts | Uroot bs
