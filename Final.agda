@@ -54,15 +54,6 @@ module Final where
 
   derivative : Float → Float → Float
   derivative x h = ((funct (x f+ h) f− funct (x f− h)) f÷ (2.0 f× h))
- 
-  ε : Float
-  ε = 0.0000001
-  p0 : Float
-  p0 = π f÷ 4.0
-  N : Float
-  N = 3.0
-  tol : Float 
-  tol = 0.001
 
   --approximation algorithm for square roots of floats
   -- x : the number to take the square root of t ≥ 0
@@ -74,7 +65,7 @@ module Final where
   newtonian x ε t | False = t
 
   sqrt : Float → Float
-  sqrt x = newtonian x ε 2.0 
+  sqrt x = newtonian x 0.0000001 2.0
   
 
     
@@ -218,8 +209,21 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
+  --Adds one to the pair if the unit is already in the list,
+  -- appends a new pair to the list if none exists
+  addUnits : Units → List (Units × Nat) → List (Units × Nat)
+  addUnits x [] = (x , 1) :: []
+  addUnits x ((u , n) :: ys) with checkEqual x u
+  addUnits x ((u , n) :: ys) | True = (u , S n) :: ys
+  addUnits x ((u , n) :: ys) | False = (u , n) :: addUnits x ys
+
+  --helper for counting number of each units in list
+  countUnits' : List Units  → List (Units × Nat) → List (Units × Nat)
+  countUnits' [] r = r
+  countUnits' (x :: xs) r = countUnits' xs (addUnits x r)
+
   countUnits : List Units → List (Units × Nat)
-  countUnits x = {!!}
+  countUnits ls = countUnits' ls []
 
   makeRoot : Units × Nat → Maybe (List Units)
   makeRoot (U , Z) = Some []
