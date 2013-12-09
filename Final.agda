@@ -14,6 +14,8 @@ module Final where
     primFloatMinus   : Float → Float → Float
     primFloatTimes   : Float → Float → Float
     primFloatDiv     : Float → Float → Float
+    primSin          : Float → Float
+    primFloatLess    : Float → Float → Bool
 
 --  open Nat using (_+_)
   open List using (_++_ ; [_] ; ++-assoc)
@@ -34,6 +36,46 @@ module Final where
   ~ x = primFloatMinus 0.0 x
 
   infix 10 ~_
+
+  abs : Float → Float
+  abs x with primFloatLess x 0.0 
+  abs x | True = ~ x
+  abs x | False = x
+  
+  π : Float
+  π = 3.141593
+
+  cosine : Float → Float
+  cosine θ = primSin ((π f÷ 2.0) f− θ)
+ 
+
+  funct : Float → Float
+  funct x = cosine x f− x
+
+  derivative : Float → Float → Float
+  derivative x h = ((funct (x f+ h) f− funct (x f− h)) f÷ (2.0 f× h))
+ 
+  ε : Float
+  ε = 0.0000001
+  p0 : Float
+  p0 = π f÷ 4.0
+  N : Float
+  N = 3.0
+  tol : Float 
+  tol = 0.001
+
+  --approximation algorithm for square roots of floats
+  -- x : the number to take the square root of t ≥ 0
+  -- ε : the relative error tolerance
+  -- t : initial guess of root
+  newtonian : Float → Float → Float → Float
+  newtonian x ε t with primFloatLess (ε f× t) (abs (t f− (x f÷ t)))
+  newtonian x ε t | True = newtonian x ε (((x f÷ t) f+ t) f÷ 2.0)
+  newtonian x ε t | False = t
+
+  sqrt : Float → Float
+  sqrt x = newtonian x ε 2.0
+  
 
     
   data Units : Set where
