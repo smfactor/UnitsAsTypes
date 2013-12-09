@@ -43,7 +43,7 @@ module Final where
   abs x | False = x
   
   π : Float
-  π = 3.141593
+  π = 3.1415926
 
   cosine : Float → Float
   cosine θ = primSin ((π f÷ 2.0) f− θ)
@@ -224,10 +224,31 @@ module Final where
 
   countUnits : List Units → List (Units × Nat)
   countUnits ls = countUnits' ls []
-  
-  
 
+  makeRoot : Units × Nat → Maybe (List Units)
+  makeRoot (U , Z) = Some []
+  makeRoot (U , S Z) = None
+  makeRoot (U , S (S n)) with makeRoot (U , n)
+  makeRoot (U , S (S n)) | Some x = Some (U :: x)
+  makeRoot (U , S (S n)) | None = None
 
+  Uroot : List (Units × Nat) → Maybe (List Units)
+  Uroot [] = Some []
+  Uroot ((U , Z) :: xs) = Uroot xs
+  Uroot (x :: xs) with makeRoot x 
+  Uroot (x :: xs) | None = None
+  Uroot (x :: xs) | Some y with Uroot xs
+  Uroot (x :: xs) | Some y | Some z = Some (y ++ z)
+  Uroot (x :: xs) | Some y | None = None
+
+  rt : Units → Units
+  rt x with makeFrac x
+  rt x | t , b with countUnits t | countUnits b
+  rt x | t , b | ts | bs with Uroot ts | Uroot bs
+  rt x₂ | t , b | ts | bs | Some rt | Some rb = filternoU (listUtoU rt u× listUtoU rb ^-1)
+  rt x₁ | t , b | ts | bs | Some x | None = {!!}
+  rt x₁ | t , b | ts | bs | None | Some x = {!!}
+  rt x | t , b | ts | bs | None | None = {!!}
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
