@@ -241,9 +241,9 @@ module Final where
   rt x with makeFrac x
   rt x | t , b with countUnits t | countUnits b
   rt x | t , b | ts | bs with Uroot ts | Uroot bs
-  rt x₂ | t , b | ts | bs | Some rt | Some rb = filternoU (listUtoU rt u× listUtoU rb ^-1)
-  rt x₁ | t , b | ts | bs | Some x | None = {!!}
-  rt x₁ | t , b | ts | bs | None | Some x = {!!}
+  rt x | t , b | ts | bs | Some rt | Some rb = filternoU (listUtoU rt u× listUtoU rb ^-1)
+  rt x | t , b | ts | bs | Some rt | None = {!!}
+  rt x | t , b | ts | bs | None | Some rb = {!!}
   rt x | t , b | ts | bs | None | None = {!!}
 
   data UF : Units → Set where
