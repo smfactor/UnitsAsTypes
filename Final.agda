@@ -187,6 +187,8 @@ module Final where
   filternoU : Units → Units
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
+  filternoU (x u× (noU ^-1)) = filternoU x
+  filternoU ((noU ^-1) u× x) = filternoU x
   filternoU (x u× x1) = filternoU x u× filternoU x1
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
@@ -209,6 +211,7 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
+{-
   --Adds one to the pair if the unit is already in the list,
   -- appends a new pair to the list if none exists
   addUnits : Units → List (Units × Nat) → List (Units × Nat)
@@ -245,10 +248,11 @@ module Final where
   rt x with makeFrac x
   rt x | t , b with countUnits t | countUnits b
   rt x | t , b | ts | bs with Uroot ts | Uroot bs
-  rt x | t , b | ts | bs | Some rt | Some rb = filternoU (listUtoU rt u× listUtoU rb ^-1)
+  rt x | t , b | ts | bs | Some rt | Some rb = Some (filternoU (listUtoU rt u× listUtoU rb ^-1))
   rt x | t , b | ts | bs | Some rt | None = {!!}
   rt x | t , b | ts | bs | None | Some rb = {!!}
   rt x | t , b | ts | bs | None | None = {!!}
+-}
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
@@ -257,6 +261,8 @@ module Final where
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
     _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+
+
 
   infixl 8 _`×_
   infixl 8 _`÷_
@@ -318,51 +324,39 @@ module Final where
   dis1sec : Float
   dis1sec = compute (displacement (V 1.0 second))
 
+  data Basic : Units → Set where
+    BnoU     : Basic noU
+    Bmeter   : Basic meter
+    Bgram    : Basic gram
+    Bsecond  : Basic second
+    Bampere  : Basic ampere
+    Bkelvin  : Basic kelvin
+    Bcandela : Basic candela
+    Bmol     : Basic mol
 
 
+  -- use :: instead of u× ????? elements of the list would then be either basic or basic ^-1
+  -- could also use pair of lists, one would be the top one would be the bottom of a large fraction, elements would be basic (not basic ^-1)
+  -- with this reduce would not have to convert to lists then back, we could also impose a sort on reduced lists
+  data Reduced : Units → Set where
+    Base : (U : Units) → Basic U → Reduced U
+-- these should not work for noU. more cases? another thing like basic but for noU?
+    B×B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2)
+    B÷B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2 ^-1)
+-- something that says the basic unit is not in the reduced unit
+    B×R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2)
+    R×B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2)
+    R÷B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2 ^-1)
+    B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
+--    _^-1    : Units → Units
+    
+--  Equivalent : Set where
 
+  --proof that reduce x is equivalent to x
 
+  --proof that reduce x is in reduced form
 
 {-
-  data UF' : Float → Units → Set where
-    `V    : (v : Float) → (U : Units) → UF' v U
-    _``+_ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (x f+ y) U
-    _``-_ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (x f− y) U
-    _``×_ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (x f× y) (reduce (U1 u× U2))
-    _``÷_ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (x f÷ y) (reduce (U1 u× U2 ^-1))
-
-  valUF' : {x : Float} {U : Units} → UF' x U → Float
-  valUF' {x} {U} (`V .x .U) = x
-  valUF' (x1 ``+ x2) = primFloatPlus (valUF' x1) (valUF' x2)
-  valUF' (x1 ``- x2) = primFloatMinus (valUF' x1) (valUF' x2)
-  valUF' (x1 ``× x2) = primFloatTimes (valUF' x1) (valUF' x2)
-  valUF' (x1 ``÷ x2) = primFloatDiv (valUF' x1) (valUF' x2)
-
-  unitsUF' : {x : Float} {U : Units} → UF' x U → Units
-  unitsUF' {x} {U} (`V .x .U) = U
-  unitsUF' (x1 ``+ x2) = unitsUF' x1
-  unitsUF' (x1 ``- x2) = unitsUF' x1
-  unitsUF' (x1 ``× x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
-  unitsUF' (x1 ``÷ x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
-
-  g : UF' (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
-  g = `V (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
-
-  displacement : {t' : Float} → (UF' t' second) → (UF' (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
-  displacement t = (((`V 0.5 noU) ``× g) ``× t) ``× t
-
-  x : UF' (valUF' (displacement (`V 1.0 second))) (unitsUF' (displacement (`V 1.0 second)))
-  x = displacement (`V 1.0 second)
--}
-{-
-module ReduceUnits' where
-  Units' : Set
-  C : Units → Units
-  cancel : {u : Units} u u× u ^-1 == noU
-
-
-
-  data Reduced : Set where
     UTrans  : ?
     URefl   : ?
     USim    : ?
@@ -384,21 +378,22 @@ module ReduceUnits' where
     --sqrt : {u : Units} → UF u → UF u
     --sqrt = {!!}
     g' : UF (meter u× ((second u× second) ^-1))
-    g' = {! V (~ 9.8) (meter u× (second u× second) ^-1) !}
+    g' = V (~ 9.8) (meter u× (second u× second) ^-1)
 
     h-dist-trav : UF (meter u× (second ^-1))   --velocity
                   → UF noU                               --angle
                   → UF meter                             -- initial height
                   → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                   → UF meter                                -- distance traveled
-    h-dist-trav v θ y₀ g = {! ((v `× (cos θ) `÷ g) `× (v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× !}
+    h-dist-trav v θ y₀ g = {! (v `× (cos θ) `÷ g) `× ((v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× y₀)))!}
 
     vtest : UF (meter u× second ^-1)
-    vtest = {! (V 1.0 meter) `÷ (V 1.0 second) !}
+    vtest = V 1.0 meter `÷ V 1.0 second
     v2test : UF (meter u× meter u× (second u× second) ^-1)
     v2test = vtest `× vtest
     gytest : UF (meter u× meter u× (second u× second) ^-1)
-    gytest = {! (V 2.0 noU) `× (V (~ 9.8) (meter u× (second u× second) ^-1)) `× (V 1.0 meter) !}
+    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second u× second) ^-1) `×
+               V 1.0 meter
     v2gy : UF (meter u× meter u× (second u× second) ^-1)
     v2gy = v2test `+ gytest
 
@@ -407,5 +402,4 @@ module ReduceUnits' where
 
     sqrt-test : (UF (meter u× second ^-1))
     sqrt-test = {!sqrt v2gy!}
-
 
