@@ -544,10 +544,16 @@ module Final where
     
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
---    ReflU : (u1 
+--    ReflU : (u1
+
+  data Same : Units → Units → Set where
+    Refl  : (u : Units) → (u : Units) → Same u u
+    Sym   : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Same (reduce u1) (reduce u2)
+    Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
+
   
-  SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → u1 == u2
-  SameU u1 u2 p = {!r!}
+--  SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → u1 == u2
+--  SameU u1 u2 p = {!r!}
 
 {- HEY SAM, THESE BELOW ARE MY STAB AT REDUCE, I COULDN'T FOLLOW WHAT YOU WHERE DOING
 I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
