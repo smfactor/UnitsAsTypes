@@ -187,6 +187,8 @@ module Final where
   filternoU : Units → Units
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
+  filternoU (x u× (noU ^-1)) = filternoU x
+  filternoU ((noU ^-1) u× x) = filternoU x
   filternoU (x u× x1) = filternoU x u× filternoU x1
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
@@ -209,6 +211,7 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
+{-
   --Adds one to the pair if the unit is already in the list,
   -- appends a new pair to the list if none exists
   addUnits : Units → List (Units × Nat) → List (Units × Nat)
@@ -249,6 +252,7 @@ module Final where
   rt x | t , b | ts | bs | Some rt | None = {!!}
   rt x | t , b | ts | bs | None | Some rb = {!!}
   rt x | t , b | ts | bs | None | None = {!!}
+-}
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
@@ -258,6 +262,8 @@ module Final where
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
     _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
     `√_  : {U : Units} → UF (U u× U) → UF U
+
+
 
   infixl 8 _`×_
   infixl 8 _`÷_
@@ -320,11 +326,42 @@ module Final where
   dis1sec : Float
   dis1sec = compute (displacement (V 1.0 second))
 
+  data Basic : Units → Set where
+    BnoU     : Basic noU
+    Bmeter   : Basic meter
+    Bgram    : Basic gram
+    Bsecond  : Basic second
+    Bampere  : Basic ampere
+    Bkelvin  : Basic kelvin
+    Bcandela : Basic candela
+    Bmol     : Basic mol
+
+
+  -- use :: instead of u× ????? elements of the list would then be either basic or basic ^-1
+  -- could also use pair of lists, one would be the top one would be the bottom of a large fraction, elements would be basic (not basic ^-1)
+  -- with this reduce would not have to convert to lists then back, we could also impose a sort on reduced lists
+  data Reduced : Units → Set where
+    Base : (U : Units) → Basic U → Reduced U
+-- these should not work for noU. more cases? another thing like basic but for noU?
+    B×B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2)
+    B÷B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2 ^-1)
+-- something that says the basic unit is not in the reduced unit
+    B×R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2)
+    R×B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2)
+    R÷B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2 ^-1)
+    B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
+--    _^-1    : Units → Units
+    
+--  Equivalent : Set where
 
   --Proof of reduce
-  data Reduced : Units → Set where
-    URefl   : {u : Units} → Reduced u → Reduced u → Reduced u
+--  data Reduced : Units → Set where
+ --   URefl   : {u : Units} → Reduced u → Reduced u → Reduced u
     
+  --proof that reduce x is equivalent to x
+
+  --proof that reduce x is in reduced form
+
 {-
     UTrans  : ?
     URefl   : ?
@@ -365,8 +402,8 @@ module Final where
     gytest : UF (meter u× meter u× (second u× second) ^-1)
     gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second u× second) ^-1) `×
                V 1.0 meter
-    v2gy : UF (meter u× (second ^-1) u× meter u× (second ^-1))
-    v2gy = {! v2test `+ gytest !}
+    v2gy : UF (meter u× meter u× (second u× second) ^-1)
+    v2gy = v2test `+ gytest
 
 
 
