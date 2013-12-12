@@ -485,6 +485,7 @@ module Final where
   dis1sec : Float
   dis1sec = compute (displacement (V 1.0 second))
 
+{-
   data Basic : Units → Set where
     BnoU     : Basic noU
     Bmeter   : Basic meter
@@ -510,7 +511,33 @@ module Final where
     R÷B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2 ^-1)
     B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
 --    _^-1    : Units → Units
+-}
 
+  count' : Units → Bool → (Float × Float × Float × Float × Float × Float × Float) → (Float × Float × Float × Float × Float × Float × Float)
+  count' noU True (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo
+  count' meter True (m , g , s , a , k , c , mo) = m f+ 1.0 , g , s , a , k , c , mo
+  count' gram True (m , g , s , a , k , c , mo) = m , g f+ 1.0 , s , a , k , c , mo
+  count' second True (m , g , s , a , k , c , mo) = m , g , s f+ 1.0 , a , k , c , mo
+  count' ampere True (m , g , s , a , k , c , mo) = m , g , s , a f+ 1.0 , k , c , mo
+  count' kelvin True (m , g , s , a , k , c , mo) = m , g , s , a , k f+ 1.0 , c , mo
+  count' candela True (m , g , s , a , k , c , mo) = m , g , s , a , k , c f+ 1.0 , mo
+  count' mol True (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo f+ 1.0
+  count' noU False (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo
+  count' meter False (m , g , s , a , k , c , mo) = m f− 1.0 , g , s , a , k , c , mo
+  count' gram False (m , g , s , a , k , c , mo) = m , g f− 1.0 , s , a , k , c , mo
+  count' second False (m , g , s , a , k , c , mo) = m , g , s f− 1.0 , a , k , c , mo
+  count' ampere False (m , g , s , a , k , c , mo) = m , g , s , a f− 1.0 , k , c , mo
+  count' kelvin False (m , g , s , a , k , c , mo) = m , g , s , a , k f− 1.0 , c , mo
+  count' candela False (m , g , s , a , k , c , mo) = m , g , s , a , k , c f− 1.0 , mo
+  count' mol False (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo f− 1.0
+  count' (u u× u1) flag xs with count' u flag xs
+  ... | xs' = count' u1 flag xs'
+  count' (u ^-1) True xs = count' u False xs
+  count' (u ^-1) False xs = count' u True xs
+
+  count : Units → Float × Float × Float × Float × Float × Float × Float
+  count u = count' u True (0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0)
+>>>>>>> 03a97d80feb5ece96fd6385f89d4e8a6595c8147
     
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
@@ -522,15 +549,22 @@ module Final where
     Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
 
 
-  data Equivalent : Units → Set where
-    Equiv : (u : Units) → (u : Units) → Equivalent u
+--  Equivalent : Set where
+  data Equivalent : Units → Units → Set where
+    Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
 
   equivalent : {u : Units} → (x : UF u) → (y : UF u) → x == y
   equivalent x y = {!!}
+
+  
     
   --proof that reduce x is equivalent to x
-  reduceEquiv : (u : Units) → Equivalent u
-  reduceEquiv units = {!Equiv units (reduce units)!}
+  reduceEquiv : (u : Units) → Equivalent u (reduce u)
+  reduceEquiv u with cancel (fst (makeFrac u)) (snd (makeFrac u))
+  reduceEquiv u | [] , [] = {!!}
+  reduceEquiv u | [] , b :: bs = {!!}
+  reduceEquiv u | t :: ts , [] = {!!}
+  reduceEquiv u | t :: ts , b :: bs = {!!} --Equiv u (reduce u) {!!}
 
   --proof that reduce x is in reduced form
   reduced-X : {!!}
