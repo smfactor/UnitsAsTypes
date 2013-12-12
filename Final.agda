@@ -159,6 +159,8 @@ module Final where
 
   cancelS : Units → List Units → (Bool × List Units)
   cancelS x [] = False , []
+  cancelS noU ys = True , ys
+  cancelS x (noU :: ys) = cancelS x ys
   cancelS x (y :: ys) with checkEqual x y
   cancelS x (y :: ys) | True = True , ys
   cancelS x (y :: ys) | False with cancelS x  ys
@@ -188,6 +190,8 @@ module Final where
   makeFrac x = x :: [] , []
 
   filternoU : Units → Units
+--  filternoU (x u× (noU u× noU)) = filternoU x
+--  filternoU ((noU u× noU) u× x) = filternoU x
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
   filternoU (x u× (noU ^-1)) = filternoU x
@@ -207,6 +211,17 @@ module Final where
     
   v' : Units
   v' = (meter u× second) u× ((second u× second) ^-1)
+
+  v1 : Units
+  v1 = meter u× second ^-1
+
+  v2 : Units
+  v2 = (meter u× second ^-1) u× noU
+
+  v3 : List Units × List Units
+  v3 = makeFrac v2
+
+  
 
   testv' : (reduce v') == (meter u× (second ^-1))
   testv' = Refl
@@ -314,7 +329,19 @@ module Final where
                 → UF meter                             -- initial height
                 → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                 → UF meter                                -- maximum height
-  max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V 2.0 noU) `× g))
+  max-height v θ y₀ g = ((v `× v {-`× sin θ `× sin θ-}) `÷ ((V (~ 2.0) noU) `× g))
+  
+  x : Float
+  x = compute (max-height (V 1.0 (meter u× (second ^-1))) (V 0.0 noU) (V 0.0 meter) g)
+  
+  1v : UF (meter u× (second ^-1))
+  1v = {!!}
+
+  θ : UF noU
+  θ = {!!}
+
+  t1 : UF (meter u× meter u× (second u× second) ^-1)
+  t1 = (1v `× 1v `× θ)
 
   mm : UF meter
   mm = V 1.0 meter
