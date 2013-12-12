@@ -81,12 +81,184 @@ module Final where
     _u×_    : Units → Units → Units
     _^-1    : Units → Units
 
---  data Units' : List Units × List Units Set where
---    u×' : {u1 u2 : Units} → List u1 → List u2 → List u1 ++ List u2
-
   infixl 10 _u×_
   infixl 11 _^-1    
+{-
+  binAdd : List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+           List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units →
+           List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+           List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units → 
+           List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+           List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units
+  binAdd (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) (nu1- , m1- , g1- , s1- , a1- , k1- , c1- , mo1- , nu1 , m1 , g1 , s1 , a1 , k1 , c1 , mo1) = nu- ++ nu1- , m- ++ m1- ,
+                                                                                                                                                                                     g- ++ g1- ,
+                                                                                                                                                                                     s- ++ s1- ,
+                                                                                                                                                                                     a- ++ a1- ,
+                                                                                                                                                                                     k- ++ k1- ,
+                                                                                                                                                                                     c- ++ c1- ,
+                                                                                                                                                                                     mo- ++ mo1- ,
+                                                                                                                                                                                     nu ++ nu1 ,
+                                                                                                                                                                                     m ++ m1 ,
+                                                                                                                                                                                     g ++ g1 , s ++ s1 , a ++ a1 , k ++ k1 , c ++ c1 , mo ++ mo1
 
+  unitize : List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+            List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units → Units
+  unitize (x :: nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u× unitize
+                                                                                               (nu- ,
+                                                                                                m- ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , x :: m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               m- ,
+                                                                                               g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize (no- , [] , x :: g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                               unitize
+                                                                                               (no- ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , [] , x :: s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               m- ,
+                                                                                               [] , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , [] , x :: a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               [] ,
+                                                                                               g- , [] , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , [] , x :: k- , c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               [] ,
+                                                                                               g- , s- , [] , k- , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , [] , x :: c- , mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               [] ,
+                                                                                               g- , s- , a- , [] , c- , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , [] , x :: mo- , nu , m , g , s , a , k , c , mo) = x ^-1 u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               [] ,
+                                                                                               g- , s- , a- , k- , [] , mo- , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , [] , x :: nu , m , g , s , a , k , c , mo) = x u×
+                                                                                             unitize
+                                                                                             ([] ,
+                                                                                              [] , g- , s- , a- , k- , c- , [] , nu , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , [] , x :: m , g , s , a , k , c , mo) = x u×
+                                                                                              unitize
+                                                                                              ([] ,
+                                                                                               [] ,
+                                                                                               g- , s- , a- , k- , c- , mo- , [] , m , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , [] , x :: g , s , a , k , c , mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , [] , g , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , m , [] , x :: s , a , k , c , mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , [] , s , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , [] , x :: a , k , c , mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , [] , a , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , [] , x :: k , c , mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , s , [] , k , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , [] , x :: c , mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , [] , c , mo)
+  unitize ([] , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , [] , x :: mo) = x u×
+                                                                                               unitize
+                                                                                               ([] ,
+                                                                                                [] ,
+                                                                                                g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , [] , mo)
+  unitize ac = noU
+
+  sort' : Units → 
+         Bool → 
+         List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+         List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units →
+         List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
+         List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units
+  sort' (u1 u× u2) flag ac = binAdd (sort' u1 flag ac) (sort' u2 flag ac)
+  sort' (u ^-1) True ac = sort' u False ac
+  sort' (u ^-1) False ac = sort' u True ac
+  sort' noU True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                m- ,
+                                                                                                g- ,
+                                                                                                s- , a- , k- , c- , mo- , noU :: nu , m , g , s , a , k , c , mo
+  sort' noU False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = noU :: nu- ,
+                                                                                                 m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' meter True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                  m- ,
+                                                                                                  g- ,
+                                                                                                  s- , a- , k- , c- , mo- , nu , meter :: m , g , s , a , k , c , mo
+  sort' meter False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                   meter :: m- ,
+                                                                                                   g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' gram True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                 m- ,
+                                                                                                 g- ,
+                                                                                                 s- , a- , k- , c- , mo- , nu , m , gram :: g , s , a , k , c , mo
+  sort' gram False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                  m- ,
+                                                                                                  gram :: g- ,
+                                                                                                  s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' second True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                   m- ,
+                                                                                                   g- ,
+                                                                                                   s- , a- , k- , c- , mo- , nu , m , g , second :: s , a , k , c , mo
+  sort' second False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                    m- ,
+                                                                                                    g- ,
+                                                                                                    second :: s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' ampere True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                   m- ,
+                                                                                                   g- ,
+                                                                                                   s- , a- , k- , c- , mo- , nu , m , g , s , ampere :: a , k , c , mo
+  sort' ampere False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                    m- ,
+                                                                                                    g- ,
+                                                                                                    s- , ampere :: a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' kelvin True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                   m- ,
+                                                                                                   g- ,
+                                                                                                   s- , a- , k- , c- , mo- , nu , m , g , s , a , kelvin :: k , c , mo
+  sort' kelvin False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                    m- ,
+                                                                                                    g- ,
+                                                                                                    s- , a- , kelvin :: k- , c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' candela True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                    m- ,
+                                                                                                    g- ,
+                                                                                                    s- ,
+                                                                                                    a- , k- , c- , mo- , nu , m , g , s , a , k , candela :: c , mo
+  sort' candela False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                     m- ,
+                                                                                                     g- ,
+                                                                                                     s- ,
+                                                                                                     a- , k- , candela :: c- , mo- , nu , m , g , s , a , k , c , mo
+  sort' mol True (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                m- ,
+                                                                                                g- ,
+                                                                                                s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mol :: mo
+  sort' mol False (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) = nu- ,
+                                                                                                 m- ,
+                                                                                                 g- ,
+                                                                                                 s- , a- , k- , c- , mol :: mo- , nu , m , g , s , a , k , c , mo
+
+  sort : Units → Units 
+  sort u = {!unitize (sort u True ([] , [] , [] , [] , [] , [] , [] , [] , [] , [] , [] , []))!}
+-}
   data Prefix : Set where
     yotta : Prefix
     zetta : Prefix
@@ -281,8 +453,6 @@ module Final where
     _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
     `√_  : {U : Units} → UF (U u× U) → UF U
 
-
-
   infixl 8 _`×_
   infixl 8 _`÷_
   infixl 4 _`+_
@@ -294,16 +464,6 @@ module Final where
   displacement : UF second → UF meter
   displacement t = V 0.5 noU `× g `× t `× t
 
-
-
---  x : Float
---  x = compute displacement 6.0
-  
-  --use UF to make dsl with rules ... plop down float and float is in units
-  --function construct UF expression then compute it
-  
-
-  
   compute : {u : Units} → UF u → Float
   compute {u} (V f .u) = f
   compute {u} (P f p .u) = prefixed f p
@@ -312,8 +472,6 @@ module Final where
   compute (x `× x₁) = compute x f× compute x₁
   compute (x `÷ x₁) = compute x f÷ compute x₁
   compute (`√ x) = √ (compute x)
-
-
 
   tm/s² : UF (meter u× ((second u× second) ^-1))
   tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
@@ -347,14 +505,6 @@ module Final where
   mm = V 1.0 meter
   ss : UF second
   ss = V 1.0 second
-
-
-
-
-
-
-
-
 
 --if doing
   --dont leav unitland
@@ -392,11 +542,21 @@ module Final where
     B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
 --    _^-1    : Units → Units
     
+--  data Units' : Units → Set where
+--    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
+--    ReflU : (u1 
+  
+  SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → u1 == u2
+  SameU u1 u2 p = {!r!}
+
 {- HEY SAM, THESE BELOW ARE MY STAB AT REDUCE, I COULDN'T FOLLOW WHAT YOU WHERE DOING
 I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
 --  Equivalent : Set where
   data Equivalent : Units → Set where
     Equiv : (u : Units) → (u : Units) → Equivalent u
+
+  equivalent : {u : Units} → (x : UF u) → (y : UF u) → x == y
+  equivalent x y = {!!}
     
   --proof that reduce x is equivalent to x
   reduceEquiv : (u : Units) → Equivalent u
@@ -405,6 +565,8 @@ I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
   --proof that reduce x is in reduced form
   reduced-X : {!!}
   reduced-X = {!!}
+
+  
 {-
     UTrans  : ?
     URefl   : ?
@@ -458,21 +620,11 @@ I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
     v2gy : UF (meter u× meter u× (second u× second) ^-1)
     v2gy = v2test `+ gytest
 
-
-
-
     sqrt-test : (UF (meter u× second ^-1))
     sqrt-test = {!`√ v2gy!}
-
-
 {-
 module ReduceUnits' where
   Units' : Set
   C : Units → Units
   cancel : {u : Units} u u× u ^-1 == noU
-
-
-
-  
 -}
-
