@@ -64,8 +64,8 @@ module Final where
   newtonian x ε t | True = newtonian x ε (((x f÷ t) f+ t) f÷ 2.0)
   newtonian x ε t | False = t
 
-  sqrt : Float → Float
-  sqrt x = newtonian x 0.0000001 2.0
+  √ : Float → Float
+  √ x = newtonian x 0.0000001 2.0
   
 
     
@@ -245,7 +245,7 @@ module Final where
   rt x with makeFrac x
   rt x | t , b with countUnits t | countUnits b
   rt x | t , b | ts | bs with Uroot ts | Uroot bs
-  rt x | t , b | ts | bs | Some rt | Some rb = filternoU (listUtoU rt u× listUtoU rb ^-1)
+  rt x | t , b | ts | bs | Some rt | Some rb = Some (filternoU (listUtoU rt u× listUtoU rb ^-1))
   rt x | t , b | ts | bs | Some rt | None = {!!}
   rt x | t , b | ts | bs | None | Some rb = {!!}
   rt x | t , b | ts | bs | None | None = {!!}
@@ -257,6 +257,7 @@ module Final where
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
     _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
   infixl 8 _`÷_
@@ -286,6 +287,7 @@ module Final where
   compute (x `- x₁) = compute x f− compute x₁
   compute (x `× x₁) = compute x f× compute x₁
   compute (x `÷ x₁) = compute x f÷ compute x₁
+  compute (`√ x) = √ (compute x)
 
 
 
@@ -319,50 +321,11 @@ module Final where
   dis1sec = compute (displacement (V 1.0 second))
 
 
-
-
-
-
+  --Proof of reduce
+  data Reduced : Units → Set where
+    URefl   : {u : Units} → Reduced u → Reduced u → Reduced u
+    
 {-
-  data UF' : Float → Units → Set where
-    `V    : (v : Float) → (U : Units) → UF' v U
-    _``+_ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (x f+ y) U
-    _``-_ : {x y : Float} {U : Units} → UF' x U → UF' y U → UF' (x f− y) U
-    _``×_ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (x f× y) (reduce (U1 u× U2))
-    _``÷_ : {x y : Float} {U1 U2 : Units} → UF' x U1 → UF' y U2 → UF' (x f÷ y) (reduce (U1 u× U2 ^-1))
-
-  valUF' : {x : Float} {U : Units} → UF' x U → Float
-  valUF' {x} {U} (`V .x .U) = x
-  valUF' (x1 ``+ x2) = primFloatPlus (valUF' x1) (valUF' x2)
-  valUF' (x1 ``- x2) = primFloatMinus (valUF' x1) (valUF' x2)
-  valUF' (x1 ``× x2) = primFloatTimes (valUF' x1) (valUF' x2)
-  valUF' (x1 ``÷ x2) = primFloatDiv (valUF' x1) (valUF' x2)
-
-  unitsUF' : {x : Float} {U : Units} → UF' x U → Units
-  unitsUF' {x} {U} (`V .x .U) = U
-  unitsUF' (x1 ``+ x2) = unitsUF' x1
-  unitsUF' (x1 ``- x2) = unitsUF' x1
-  unitsUF' (x1 ``× x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
-  unitsUF' (x1 ``÷ x2) = reduce ((unitsUF' x1) u× (unitsUF' x2))
-
-  g : UF' (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
-  g = `V (primFloatMinus 0.0 9.8) (meter u× ((second u× second) ^-1))
-
-  displacement : {t' : Float} → (UF' t' second) → (UF' (primFloatTimes (primFloatTimes (primFloatMinus 0.0 4.9) t') t') meter)
-  displacement t = (((`V 0.5 noU) ``× g) ``× t) ``× t
-
-  x : UF' (valUF' (displacement (`V 1.0 second))) (unitsUF' (displacement (`V 1.0 second)))
-  x = displacement (`V 1.0 second)
--}
-{-
-module ReduceUnits' where
-  Units' : Set
-  C : Units → Units
-  cancel : {u : Units} u u× u ^-1 == noU
-
-
-
-  data Reduced : Set where
     UTrans  : ?
     URefl   : ?
     USim    : ?
@@ -373,8 +336,10 @@ module ReduceUnits' where
     Ucancel2 : {u : Units} (u ^-1) u× u == noU
     Uid1     : {u : Units} u u× noU == u
     Uid2     : {u : Units} noU u× u == u
-
 -}
+
+
+
  {- Library for example of code -}
   module Projectile where
     cos : UF noU → UF noU
@@ -384,28 +349,40 @@ module ReduceUnits' where
     --sqrt : {u : Units} → UF u → UF u
     --sqrt = {!!}
     g' : UF (meter u× ((second u× second) ^-1))
-    g' = {! V (~ 9.8) (meter u× (second u× second) ^-1) !}
+    g' = V (~ 9.8) (meter u× (second u× second) ^-1)
 
     h-dist-trav : UF (meter u× (second ^-1))   --velocity
                   → UF noU                               --angle
                   → UF meter                             -- initial height
                   → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                   → UF meter                                -- distance traveled
-    h-dist-trav v θ y₀ g = {! ((v `× (cos θ) `÷ g) `× (v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× !}
+    h-dist-trav v θ y₀ g = {! (v `× (cos θ) `÷ g) `× ((v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× y₀)))!}
 
     vtest : UF (meter u× second ^-1)
-    vtest = {! (V 1.0 meter) `÷ (V 1.0 second) !}
+    vtest = V 1.0 meter `÷ V 1.0 second
     v2test : UF (meter u× meter u× (second u× second) ^-1)
     v2test = vtest `× vtest
     gytest : UF (meter u× meter u× (second u× second) ^-1)
-    gytest = {! (V 2.0 noU) `× (V (~ 9.8) (meter u× (second u× second) ^-1)) `× (V 1.0 meter) !}
-    v2gy : UF (meter u× meter u× (second u× second) ^-1)
-    v2gy = v2test `+ gytest
+    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second u× second) ^-1) `×
+               V 1.0 meter
+    v2gy : UF (meter u× (second ^-1) u× meter u× (second ^-1))
+    v2gy = {! v2test `+ gytest !}
 
 
 
 
     sqrt-test : (UF (meter u× second ^-1))
-    sqrt-test = {!sqrt v2gy!}
+    sqrt-test = {!`√ v2gy!}
 
+
+{-
+module ReduceUnits' where
+  Units' : Set
+  C : Units → Units
+  cancel : {u : Units} u u× u ^-1 == noU
+
+
+
+  
+-}
 
