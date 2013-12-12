@@ -303,8 +303,18 @@ module Final where
   tm/s² : UF (meter u× ((second u× second) ^-1))
   tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
 
+  computetest : Float
+  computetest = compute (displacement (V 1.0 second))
 
+  sin : UF noU → UF noU
+  sin = {!!}
 
+  max-height : UF (meter u× (second ^-1))   --velocity
+                → UF noU                               --angle
+                → UF meter                             -- initial height
+                → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                → UF meter                                -- maximum height
+  max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V 2.0 noU) `× g))
 
   mm : UF meter
   mm = V 1.0 meter
@@ -387,8 +397,8 @@ I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
   module Projectile where
     cos : UF noU → UF noU
     cos = {!!}
-    sin : UF noU → UF noU
-    sin = {!!}
+--    sin : UF noU → UF noU
+--    sin = {!!}
     --sqrt : {u : Units} → UF u → UF u
     --sqrt = {!!}
     g' : UF (meter u× ((second u× second) ^-1))
@@ -400,6 +410,16 @@ I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
                   → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                   → UF meter                                -- distance traveled
     h-dist-trav v θ y₀ g = {! (v `× (cos θ) `÷ g) `× ((v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× y₀)))!}
+{-
+    max-height : UF (meter u× (second ^-1))   --velocity
+                  → UF noU                               --angle
+                  → UF meter                             -- initial height
+                  → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                  → UF meter                                -- maximum height
+    max-height v θ y₀ g = {!!(v `× v `× sin θ `× sin θ) `× (((V 2.0 noU) `× g) ^-1) `+ y₀!}
+-}
+    treduce :  Units
+    treduce = reduce (noU u× (meter u× (second u× second) ^-1))
 
     vtest : UF (meter u× second ^-1)
     vtest = V 1.0 meter `÷ V 1.0 second
