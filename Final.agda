@@ -510,6 +510,7 @@ module Final where
     R÷B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2 ^-1)
     B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
 --    _^-1    : Units → Units
+
     
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
@@ -520,13 +521,7 @@ module Final where
     Sym   : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Same (reduce u1) (reduce u2)
     Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
 
-  
---  SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → u1 == u2
---  SameU u1 u2 p = {!r!}
 
-{- HEY SAM, THESE BELOW ARE MY STAB AT REDUCE, I COULDN'T FOLLOW WHAT YOU WHERE DOING
-I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
---  Equivalent : Set where
   data Equivalent : Units → Set where
     Equiv : (u : Units) → (u : Units) → Equivalent u
 
