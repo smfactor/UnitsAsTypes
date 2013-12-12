@@ -81,6 +81,9 @@ module Final where
     _u×_    : Units → Units → Units
     _^-1    : Units → Units
 
+--  data Units' : List Units × List Units Set where
+--    u×' : {u1 u2 : Units} → List u1 → List u2 → List u1 ++ List u2
+
   infixl 10 _u×_
   infixl 11 _^-1    
 
@@ -352,16 +355,19 @@ module Final where
     B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
 --    _^-1    : Units → Units
     
+{- HEY SAM, THESE BELOW ARE MY STAB AT REDUCE, I COULDN'T FOLLOW WHAT YOU WHERE DOING
+I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
 --  Equivalent : Set where
-
-  --Proof of reduce
---  data Reduced : Units → Set where
- --   URefl   : {u : Units} → Reduced u → Reduced u → Reduced u
+  data Equivalent : Units → Set where
+    Equiv : (u : Units) → (u : Units) → Equivalent u
     
   --proof that reduce x is equivalent to x
+  reduceEquiv : (u : Units) → Equivalent u
+  reduceEquiv units = {!Equiv units (reduce units)!}
 
   --proof that reduce x is in reduced form
-
+  reduced-X : {!!}
+  reduced-X = {!!}
 {-
     UTrans  : ?
     URefl   : ?
