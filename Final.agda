@@ -83,6 +83,7 @@ module Final where
 
   infixl 10 _u×_
   infixl 11 _^-1    
+
 {-
   binAdd : List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
            List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units →
@@ -90,16 +91,7 @@ module Final where
            List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units → 
            List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
            List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units
-  binAdd (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) (nu1- , m1- , g1- , s1- , a1- , k1- , c1- , mo1- , nu1 , m1 , g1 , s1 , a1 , k1 , c1 , mo1) = nu- ++ nu1- , m- ++ m1- ,
-                                                                                                                                                                                     g- ++ g1- ,
-                                                                                                                                                                                     s- ++ s1- ,
-                                                                                                                                                                                     a- ++ a1- ,
-                                                                                                                                                                                     k- ++ k1- ,
-                                                                                                                                                                                     c- ++ c1- ,
-                                                                                                                                                                                     mo- ++ mo1- ,
-                                                                                                                                                                                     nu ++ nu1 ,
-                                                                                                                                                                                     m ++ m1 ,
-                                                                                                                                                                                     g ++ g1 , s ++ s1 , a ++ a1 , k ++ k1 , c ++ c1 , mo ++ mo1
+  binAdd (nu- , m- , g- , s- , a- , k- , c- , mo- , nu , m , g , s , a , k , c , mo) (nu1- , m1- , g1- , s1- , a1- , k1- , c1- , mo1- , nu1 , m1 , g1 , s1 , a1 , k1 , c1 , mo1) = nu- ++ nu1- , m- ++ m1- , g- ++ g1- , s- ++ s1- , a- ++ a1- , k- ++ k1- , c- ++ c1- , mo- ++ mo1- , nu ++ nu1 , m ++ m1 , g ++ g1 , s ++ s1 , a ++ a1 , k ++ k1 , c ++ c1 , mo ++ mo1
 
   unitize : List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units ×
             List Units × List Units × List Units × List Units × List Units × List Units × List Units × List Units → Units
@@ -257,7 +249,7 @@ module Final where
                                                                                                  s- , a- , k- , c- , mol :: mo- , nu , m , g , s , a , k , c , mo
 
   sort : Units → Units 
-  sort u = {!unitize (sort u True ([] , [] , [] , [] , [] , [] , [] , [] , [] , [] , [] , []))!}
+  sort u = unitize (sort u True ([] , [] , [] , [] , [] , [] , [] , [] , [] , [] , [] , []))
 -}
   data Prefix : Set where
     yotta : Prefix
@@ -328,7 +320,6 @@ module Final where
   checkEqual ((x ^-1) ^-1) y = checkEqual x y
   checkEqual x y = False
 
-
   cancelS : Units → List Units → (Bool × List Units)
   cancelS x [] = False , []
   cancelS noU ys = True , ys
@@ -339,14 +330,12 @@ module Final where
   cancelS x (y :: ys) | False | True , ys' = True , y :: ys'
   cancelS x (y :: ys) | False | False , ys' = False , y :: ys'
 
-
   cancel : List Units → List Units → (List Units × List Units)
   cancel [] b = [] , b
   cancel (x :: ts) b with cancelS x b
   cancel (x :: ts) b | True , b' = cancel ts b'
   cancel (x :: ts) b | False , _ with cancel ts b
   cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
-
 
   makeFrac : Units → List Units × List Units
   makeFrac (x ^-1 u× y ^-1) with makeFrac x | makeFrac y
@@ -362,13 +351,15 @@ module Final where
   makeFrac x = x :: [] , []
 
   filternoU : Units → Units
---  filternoU (x u× (noU u× noU)) = filternoU x
---  filternoU ((noU u× noU) u× x) = filternoU x
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
   filternoU (x u× (noU ^-1)) = filternoU x
   filternoU ((noU ^-1) u× x) = filternoU x
-  filternoU (x u× x1) = filternoU x u× filternoU x1
+  filternoU (x u× x1) with filternoU x | filternoU x1
+  ... | noU | noU = noU
+  ... | u | noU = u
+  ... | noU | u = u
+  ... | u1 | u2 = u1 u× u2
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
 
@@ -479,28 +470,6 @@ module Final where
   computetest : Float
   computetest = compute (displacement (V 1.0 second))
 
-  sin : UF noU → UF noU
-  sin = {!!}
-
-  max-height : UF (meter u× (second ^-1))   --velocity
-                → UF noU                               --angle
-                → UF meter                             -- initial height
-                → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
-                → UF meter                                -- maximum height
-  max-height v θ y₀ g = ((v `× v {-`× sin θ `× sin θ-}) `÷ ((V (~ 2.0) noU) `× g))
-  
-  x : Float
-  x = compute (max-height (V 1.0 (meter u× (second ^-1))) (V 0.0 noU) (V 0.0 meter) g)
-  
-  1v : UF (meter u× (second ^-1))
-  1v = {!!}
-
-  θ : UF noU
-  θ = {!!}
-
-  t1 : UF (meter u× meter u× (second u× second) ^-1)
-  t1 = (1v `× 1v `× θ)
-
   mm : UF meter
   mm = V 1.0 meter
   ss : UF second
@@ -599,14 +568,14 @@ I WILL FOLLOW UP WITH MORE CODE TONIGHT -}
                   → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                   → UF meter                                -- distance traveled
     h-dist-trav v θ y₀ g = {! (v `× (cos θ) `÷ g) `× ((v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× y₀)))!}
-{-
+
     max-height : UF (meter u× (second ^-1))   --velocity
-                  → UF noU                               --angle
-                  → UF meter                             -- initial height
-                  → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
-                  → UF meter                                -- maximum height
-    max-height v θ y₀ g = {!!(v `× v `× sin θ `× sin θ) `× (((V 2.0 noU) `× g) ^-1) `+ y₀!}
--}
+                → UF noU                               --angle
+                → UF meter                             -- initial height
+                → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                → UF meter                                -- maximum height
+    max-height v θ y₀ g = ((v `× v {-`× sin θ `× sin θ-}) `÷ ((V (~ 2.0) noU) `× g))
+
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second u× second) ^-1))
 
