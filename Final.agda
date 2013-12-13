@@ -224,9 +224,6 @@ module Final where
   data RecursionPermission {A : Set} : List A → Set where
     CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
 
-  cancel : Units -> Units -> Units
-  cancel = ?
-
   flip : Units → Units
   flip noU = noU
   flip meter = meter-
