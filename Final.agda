@@ -333,7 +333,7 @@ module Final where
   reduce : Units → Units
   reduce (noU u× u1) = reduce u1
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
-  reduce (u u× u2) = cancel u (reduce u2)
+  reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
 
 {-
