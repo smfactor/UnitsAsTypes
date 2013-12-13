@@ -284,6 +284,45 @@ module Final where
   testv : reduce v == noU
   testv = Refl
 
+  order : Units → Units
+  order (noU u× u2) = order u2
+  order (meter u× u2) = meter u× order u2
+  order (meter- u× u2) = order u2 u× meter-
+  order (gram u× u2) = {!!}
+  order (gram- u× u2) = {!!}
+  order (second u× u2) = {!!}
+  order (second- u× u2) = {!!}
+  order (ampere u× u2) = {!!}
+  order (ampere- u× u2) = {!!}
+  order (kelvin u× u2) = {!!}
+  order (kelvin- u× u2) = {!!}
+  order (candela u× u2) = {!!}
+  order (candela- u× u2) = {!!}
+  order (mol u× u2) = {!!}
+  order (mol- u× u2) = {!!}
+  order (u1 u× u2 u× u3) = {!!}
+  order u = u
+  
+  isBase : Units → Bool
+  isBase u = ?
+  
+  
+ --floats all units of type units to the front
+  order-m : Units → Units → Units
+  order-m (u u× us) = meter u× (order-m us)
+  order-m (u u× us) = order us u× u
+  order-m u = u
+  --floats all second to the front
+  order-s : Units → Units
+  order-s (second u× us) = second u× (order-s us)
+  order-s (u u× us) = order us u× u
+  order-s u = u
+  --floats all grams to the front
+  order-g : Units → Units
+  order-g (gram u× us) = gram u×  (order-g us)
+  order-g (u u× us) = order us u× u
+  order-g u = u
+
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
     P    : (f : Float) → (p : Prefix) → (U : Units) → UF U
@@ -355,16 +394,15 @@ module Final where
 
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second- u× second-)))
-{-
+
     vtest : UF (meter u× second-)
     vtest = V 1.0 meter `÷ V 1.0 second
---    v2test : UF ((meter u× meter) u× (second- u× second-))
---    v2test = vtest `× vtest
---    gytest : UF (meter u× meter u× (second- u× second-))
---    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `×
---               V 1.0 meter
---    v2gy : UF (meter u× meter u× (second- u× second-))
- --   v2gy = v2test `+ gytest
+{-    v2test : UF ((meter u× meter) u× (second- u× second-))
+    v2test = vtest `× vtest
+    gytest : UF (meter u× meter u× (second- u× second-))
+    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `× V 1.0 meter
+    v2gy : UF (meter u× meter u× (second- u× second-))
+    v2gy = v2test `+ gytest
 
     sqrt-test : (UF (meter u× second-))
     sqrt-test = {!`√ v2gy!}
