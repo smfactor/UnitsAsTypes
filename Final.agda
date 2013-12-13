@@ -135,79 +135,7 @@ module Final where
   prefixed f yocto = f f÷ 1.0e24
 
   
-{-
-  listUtoU : List Units → Units
-  listUtoU [] = noU
-  listUtoU (x :: xs) = x u× listUtoU xs
 
-  checkEqual : Units → Units → Bool
-  checkEqual noU noU = True
-  checkEqual meter meter = True
-  checkEqual gram gram = True
-  checkEqual second second = True
-  checkEqual ampere ampere = True
-  checkEqual kelvin kelvin = True
-  checkEqual candela candela = True
-  checkEqual mol mol = True
-  checkEqual (x ^-1) (y ^-1) = checkEqual x y
-  checkEqual (x1 u× x2) (y1 u× y2) with checkEqual x1 y1
-  checkEqual (x1 u× x2) (y1 u× y2) | True with checkEqual x2 y2
-  checkEqual (x1 u× x2) (y1 u× y2) | True | True = True
-  checkEqual (x1 u× x2) (y1 u× y2) | True | False = False
-  checkEqual (x1 u× x2) (y1 u× y2) | False = False
-  checkEqual x ((y ^-1) ^-1) = checkEqual x y
-  checkEqual ((x ^-1) ^-1) y = checkEqual x y
-  checkEqual x y = False
-
-  cancelS : Units → List Units → (Bool × List Units)
-  cancelS x [] = False , []
-  cancelS noU ys = True , ys
-  cancelS x (noU :: ys) = cancelS x ys
-  cancelS x (y :: ys) with checkEqual x y
-  cancelS x (y :: ys) | True = True , ys
-  cancelS x (y :: ys) | False with cancelS x  ys
-  cancelS x (y :: ys) | False | True , ys' = True , y :: ys'
-  cancelS x (y :: ys) | False | False , ys' = False , y :: ys'
-
-  cancel : List Units → List Units → (List Units × List Units)
-  cancel [] b = [] , b
-  cancel (x :: ts) b with cancelS x b
-  cancel (x :: ts) b | True , b' = cancel ts b'
-  cancel (x :: ts) b | False , _ with cancel ts b
-  cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
-
-  makeFrac : Units → List Units × List Units
-  makeFrac (x ^-1 u× y ^-1) with makeFrac x | makeFrac y
-  ... | tx , bx | ty , by = bx ++ by , tx ++ ty
-  makeFrac (x ^-1 u× y) with makeFrac x | makeFrac y
-  ... | tx , bx | ty , by = bx ++ ty , tx ++ by
-  makeFrac (x u× y ^-1) with makeFrac x | makeFrac y
-  ... | tx , bx | ty , by = tx ++ by , bx ++ ty
-  makeFrac (x u× y) with makeFrac x | makeFrac y
-  ... | tx , bx | ty , by = tx ++ ty , bx ++ by
-  makeFrac (x ^-1) with makeFrac x 
-  ... | t , b = b , t
-  makeFrac x = x :: [] , []
-
-  filternoU : Units → Units
-  filternoU (x u× noU) = filternoU x
-  filternoU (noU u× x) = filternoU x
-  filternoU (x u× (noU ^-1)) = filternoU x
-  filternoU ((noU ^-1) u× x) = filternoU x
-  filternoU (x u× x1) with filternoU x | filternoU x1
-  ... | noU | noU = noU
-  ... | u | noU = u
-  ... | noU | u = u
-  ... | u1 | u2 = u1 u× u2
-  filternoU (x ^-1) = filternoU x ^-1
-  filternoU x = x
-
-  reduce : Units → Units 
-  reduce x with makeFrac x
-  reduce x | t , b with cancel t b
-  reduce x | t , b | t' , [] = filternoU (listUtoU t')
-  reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
--} 
 {- Suffix xs ys means that xs is a suffix of ys -}
 
   data Suffix {A : Set} : List A → List A → Set where
@@ -336,28 +264,18 @@ module Final where
   reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
 
-{-
   v : Units
-  v = (meter u× (meter ^-1))
-    
+  v = meter u× meter-
+
   v' : Units
-  v' = (meter u× second) u× ((second u× second) ^-1)
+  v' = (meter u× second) u× ((second- u× second-))
 
-  v1 : Units
-  v1 = meter u× second ^-1
-
-  v2 : Units
-  v2 = (meter u× second ^-1) u× noU
-
-  v3 : List Units × List Units
-  v3 = makeFrac v2
-
-  testv' : (reduce v') == (meter u× (second ^-1))
+  testv' : (reduce v') == (meter u× second-)
   testv' = Refl
 
   testv : reduce v == noU
   testv = Refl
--}
+
 {-
   --Adds one to the pair if the unit is already in the list,
   -- appends a new pair to the list if none exists
