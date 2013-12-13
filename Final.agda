@@ -537,7 +537,6 @@ module Final where
 
   count : Units → Float × Float × Float × Float × Float × Float × Float
   count u = count' u True (0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0)
->>>>>>> 03a97d80feb5ece96fd6385f89d4e8a6595c8147
     
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
