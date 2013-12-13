@@ -552,10 +552,6 @@ module Final where
   data Equivalent : Units → Units → Set where
     Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
 
-  equivalent : {u : Units} → (x : UF u) → (y : UF u) → x == y
-  equivalent x y = {!!}
-
-  
     
   --proof that reduce x is equivalent to x
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
@@ -589,11 +585,11 @@ module Final where
  {- Library for example of code -}
   module Projectile where
     cos : UF noU → UF noU
-    cos = {!!}
+    cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) noU
     sin : UF noU → UF noU
-    sin = {!!}
-    sqrt : {u : Units} → UF u → UF u
-    sqrt = {!!}
+    sin θ = V (primSin (compute θ)) noU
+--    sqrt : {u : Units} → UF u → UF u
+--    sqrt = {!!}
     g' : UF (meter u× ((second u× second) ^-1))
     g' = V (~ 9.8) (meter u× (second u× second) ^-1)
 
@@ -625,9 +621,3 @@ module Final where
 
     sqrt-test : (UF (meter u× second ^-1))
     sqrt-test = {!`√ v2gy!}
-{-
-module ReduceUnits' where
-  Units' : Set
-  C : Units → Units
-  cancel : {u : Units} u u× u ^-1 == noU
--}
