@@ -208,6 +208,25 @@ module Final where
   reduce x | t , b | t' , [] = filternoU (listUtoU t')
   reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
 -}
+
+  flip : Units → Units
+  flip noU = noU
+  flip meter = meter-
+  flip meter- = meter
+  flip gram = gram-
+  flip gram- = gram
+  flip second = second-
+  flip second- = second
+  flip ampere = ampere-
+  flip ampere- = ampere
+  flip kelvin = kelvin-
+  flip kelvin- = kelvin
+  flip candela = candela-
+  flip candela- = candela
+  flip mol = mol-
+  flip mol- = mol
+  flip (x1 u× x2) = (flip x1) u× (flip x2)
+
   reduce : Units → Units
   reduce u = {!!}
 
@@ -282,7 +301,7 @@ module Final where
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
---    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× flip U2))
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
