@@ -390,7 +390,7 @@ module Final where
 
     vtest : UF ((U meter) u× second-)
     vtest = V 1.0 (U meter) `÷ V 1.0 second
-{-    v2test : UF (((U meter) u× (U meter)) u× ((U second-) u× second-))
+    v2test : UF (((U meter) u× (U meter)) u× ((U second-) u× second-))
     v2test = vtest `× vtest
     gytest : UF ((U meter) u× (U meter) u× ((U second-) u× second-))
     gytest = V 2.0 (U noU) `× V (~ 9.8) ((U meter) u× ((U second-) u× second-)) `× V 1.0 (U meter)
@@ -399,4 +399,5 @@ module Final where
 
     sqrt-test : (UF ((U meter) u× second-))
     sqrt-test = {!`√ v2gy!}
--}
+    
+    
