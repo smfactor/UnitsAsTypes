@@ -266,58 +266,12 @@ module Final where
 
   v : Units
   v = meter u× meter-
-
   v' : Units
   v' = (meter u× second) u× ((second- u× second-))
-
   testv' : (reduce v') == (meter u× second-)
   testv' = Refl
-
   testv : reduce v == noU
   testv = Refl
-
-{-
-  --Adds one to the pair if the unit is already in the list,
-  -- appends a new pair to the list if none exists
-  addUnits : Units → List (Units × Nat) → List (Units × Nat)
-  addUnits x [] = (x , 1) :: []
-  addUnits x ((u , n) :: ys) with checkEqual x u
-  addUnits x ((u , n) :: ys) | True = (u , S n) :: ys
-  addUnits x ((u , n) :: ys) | False = (u , n) :: addUnits x ys
-
-  --helper for counting number of each units in list
-  countUnits' : List Units  → List (Units × Nat) → List (Units × Nat)
-  countUnits' [] r = r
-  countUnits' (x :: xs) r = countUnits' xs (addUnits x r)
-
-  countUnits : List Units → List (Units × Nat)
-  countUnits ls = countUnits' ls []
-
-  makeRoot : Units × Nat → Maybe (List Units)
-  makeRoot (U , Z) = Some []
-  makeRoot (U , S Z) = None
-  makeRoot (U , S (S n)) with makeRoot (U , n)
-  makeRoot (U , S (S n)) | Some x = Some (U :: x)
-  makeRoot (U , S (S n)) | None = None
-
-  Uroot : List (Units × Nat) → Maybe (List Units)
-  Uroot [] = Some []
-  Uroot ((U , Z) :: xs) = Uroot xs
-  Uroot (x :: xs) with makeRoot x 
-  Uroot (x :: xs) | None = None
-  Uroot (x :: xs) | Some y with Uroot xs
-  Uroot (x :: xs) | Some y | Some z = Some (y ++ z)
-  Uroot (x :: xs) | Some y | None = None
-
-  rt : Units → Maybe Units
-  rt x with makeFrac x
-  rt x | t , b with countUnits t | countUnits b
-  rt x | t , b | ts | bs with Uroot ts | Uroot bs
-  rt x | t , b | ts | bs | Some rt | Some rb = Some (filternoU (listUtoU rt u× listUtoU rb ^-1))
-  rt x | t , b | ts | bs | Some rt | None = {!!}
-  rt x | t , b | ts | bs | None | Some rb = {!!}
-  rt x | t , b | ts | bs | None | None = {!!}
--}
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
@@ -348,134 +302,20 @@ module Final where
 --  compute (x `÷ x₁) = compute x f÷ compute x₁
 --  compute (`√ x) = √ (compute x)
 
-
-{-
-  data Basic : Units → Set where
-    BnoU     : Basic noU
-    Bmeter   : Basic meter
-    Bgram    : Basic gram
-    Bsecond  : Basic second
-    Bampere  : Basic ampere
-    Bkelvin  : Basic kelvin
-    Bcandela : Basic candela
-    Bmol     : Basic mol
-
-
-  -- use :: instead of u× ????? elements of the list would then be either basic or basic ^-1
-  -- could also use pair of lists, one would be the top one would be the bottom of a large fraction, elements would be basic (not basic ^-1)
-  -- with this reduce would not have to convert to lists then back, we could also impose a sort on reduced lists
-  data Reduced : Units → Set where
-    Base : (U : Units) → Basic U → Reduced U
--- these should not work for noU. more cases? another thing like basic but for noU?
-    B×B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2)
-    B÷B  : (U1 U2 : Units) → Basic U1 → Basic U2 → Reduced (U1 u× U2 ^-1)
--- something that says the basic unit is not in the reduced unit
-    B×R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2)
-    R×B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2)
-    R÷B  : (U1 U2 : Units) → Reduced U1 → Basic U2 → {!!} → Reduced (U1 u× U2 ^-1)
-    B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
---    _^-1    : Units → Units
--}
-{-
-  count' : Units → Bool → (Float × Float × Float × Float × Float × Float × Float) → (Float × Float × Float × Float × Float × Float × Float)
-  count' noU True (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo
-  count' meter True (m , g , s , a , k , c , mo) = m f+ 1.0 , g , s , a , k , c , mo
-  count' gram True (m , g , s , a , k , c , mo) = m , g f+ 1.0 , s , a , k , c , mo
-  count' second True (m , g , s , a , k , c , mo) = m , g , s f+ 1.0 , a , k , c , mo
-  count' ampere True (m , g , s , a , k , c , mo) = m , g , s , a f+ 1.0 , k , c , mo
-  count' kelvin True (m , g , s , a , k , c , mo) = m , g , s , a , k f+ 1.0 , c , mo
-  count' candela True (m , g , s , a , k , c , mo) = m , g , s , a , k , c f+ 1.0 , mo
-  count' mol True (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo f+ 1.0
-  count' noU False (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo
-  count' meter False (m , g , s , a , k , c , mo) = m f− 1.0 , g , s , a , k , c , mo
-  count' gram False (m , g , s , a , k , c , mo) = m , g f− 1.0 , s , a , k , c , mo
-  count' second False (m , g , s , a , k , c , mo) = m , g , s f− 1.0 , a , k , c , mo
-  count' ampere False (m , g , s , a , k , c , mo) = m , g , s , a f− 1.0 , k , c , mo
-  count' kelvin False (m , g , s , a , k , c , mo) = m , g , s , a , k f− 1.0 , c , mo
-  count' candela False (m , g , s , a , k , c , mo) = m , g , s , a , k , c f− 1.0 , mo
-  count' mol False (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo f− 1.0
-  count' (u u× u1) flag xs with count' u flag xs
-  ... | xs' = count' u1 flag xs'
-  --count' (u ^-1) True xs = count' u False xs
---  count' (u ^-1) False xs = count' u True xs
-
-  count : Units → Float × Float × Float × Float × Float × Float × Float
-  count u = count' u True (0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0)
-  -}  
---  data Units' : Units → Set where
---    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
---    ReflU : (u1
 {-
   data Same : Units → Units → Set where
     Refl  : (u : Units) → (u : Units) → Same u u
     Sym   : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Same (reduce u1) (reduce u2)
     Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
-
+-}
 
 --  Equivalent : Set where
-  data Equivalent : Units → Units → Set where
-    Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2-}
-{-
-  --proof that reduce x is equivalent to x
-  reduceEquiv : (u : Units) → Equivalent u (reduce u)
-  reduceEquiv u with cancel (fst (makeFrac u)) (snd (makeFrac u))
-  reduceEquiv noU | [] , [] = Equiv noU noU Refl
-  reduceEquiv meter | [] , [] = Equiv meter noU {!!}
-  reduceEquiv gram | [] , [] = {!!}
-  reduceEquiv second | [] , [] = {!!}
-  reduceEquiv ampere | [] , [] = {!!}
-  reduceEquiv kelvin | [] , [] = {!!}
-  reduceEquiv candela | [] , [] = {!!}
-  reduceEquiv mol | [] , [] = {!!}
-  reduceEquiv (u u× u₁) | [] , [] = {!!}
-  reduceEquiv (u ^-1) | [] , [] = {!!}
-  reduceEquiv u | [] , b :: bs = {!!}
-  reduceEquiv u | t :: ts , [] = {!!}
-  reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
-  ... | P1 | P2 = {!!}
-  reduceEquiv : (u : Units) → Equivalent u (reduce u)
-  reduceEquiv noU = Equiv noU noU Refl
-  reduceEquiv meter = Equiv meter meter Refl
-  reduceEquiv gram = Equiv gram gram Refl
-  reduceEquiv second = Equiv second second Refl
-  reduceEquiv ampere = Equiv ampere ampere Refl
-  reduceEquiv kelvin = Equiv kelvin kelvin Refl
-  reduceEquiv candela = Equiv candela candela Refl
-  reduceEquiv mol = Equiv mol mol Refl
-  reduceEquiv (u u× u1) with cancel (fst (makeFrac (u u× u1))) (snd (makeFrac (u u× u1)))
-  reduceEquiv (u u× u1) | [] , [] = {!!}
-  reduceEquiv (u u× u1) | [] , b :: bs = {!!}
-  reduceEquiv (u u× u1) | t :: ts , [] = {!!}
-  reduceEquiv (u u× u1) | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
-  ... | P1 | P2 = {!!}
-  reduceEquiv (u ^-1) with cancel (fst (makeFrac (u ^-1))) (snd (makeFrac (u ^-1)))
-  reduceEquiv (u ^-1) | [] , [] = {!!}
-  reduceEquiv (u ^-1) | [] , b :: bs = {!!}
-  reduceEquiv (u ^-1) | t :: ts , [] = {!!}
-  reduceEquiv (u ^-1) | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
-  ... | P1 | P2 = {!!}
--}
+--  data Equivalent : Units → Units → Set where
+  --  Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
+
   --proof that reduce x is in reduced form
   reduced-X : {!!}
   reduced-X = {!!}
-
-  data EqUF : {u1 u2 : Units} → UF u1 → UF u2 → Set where
-    eq : {u1 u2 : Units} → (uf1 : (UF u1)) → (uf2 : (UF u2)) → EqUF uf1 uf2
-
---  reduceEquvUF : {u : Units} → UF u → EqUF u (reduce
-{-
-    UTrans  : ?
-    URefl   : ?
-    USim    : ?
-    UCong   : ?
-    UnoU-1  : (noU ^-1) == noU
--- more cases here if u is not next to u^-1?
-    Ucancel1 : {u : Units} u u× (u ^-1) == noU
-    Ucancel2 : {u : Units} (u ^-1) u× u == noU
-    Uid1     : {u : Units} u u× noU == u
-    Uid2     : {u : Units} noU u× u == u
--}
-
 
 
  {- Library for example of code
