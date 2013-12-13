@@ -210,6 +210,7 @@ module Final where
 -}
   reduce : Units → Units
   reduce u = {!!}
+
 {-
   v : Units
   v = (meter u× (meter ^-1))
@@ -225,8 +226,6 @@ module Final where
 
   v3 : List Units × List Units
   v3 = makeFrac v2
-
-  
 
   testv' : (reduce v') == (meter u× (second ^-1))
   testv' = Refl
@@ -391,7 +390,6 @@ module Final where
   reduceEquiv u | t :: ts , [] = {!!}
   reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
   ... | P1 | P2 = {!!}
--
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
   reduceEquiv noU = Equiv noU noU Refl
   reduceEquiv meter = Equiv meter meter Refl
