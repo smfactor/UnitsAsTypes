@@ -305,23 +305,6 @@ module Final where
   
   isBase : Units → Bool
   isBase u = ?
-  
-  
- --floats all units of type units to the front
-  order-m : Units → Units → Units
-  order-m (u u× us) = meter u× (order-m us)
-  order-m (u u× us) = order us u× u
-  order-m u = u
-  --floats all second to the front
-  order-s : Units → Units
-  order-s (second u× us) = second u× (order-s us)
-  order-s (u u× us) = order us u× u
-  order-s u = u
-  --floats all grams to the front
-  order-g : Units → Units
-  order-g (gram u× us) = gram u×  (order-g us)
-  order-g (u u× us) = order us u× u
-  order-g u = u
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
@@ -404,10 +387,7 @@ module Final where
     gytest : UF (second- u× (meter u× (second- u× meter)))
     gytest = (V 2.0 noU) `× V (~ 9.8) (meter u× (second- u× second-)) `×
                (V 1.0 meter)
-    v2test : UF ((meter u× meter) u× (second- u× second-))
-    v2test = vtest `× vtest
-    gytest : UF (meter u× meter u× (second- u× second-))
-    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `× V 1.0 meter
+
     v2gy : UF (meter u× meter u× (second- u× second-))
     v2gy = v2test `+ gytest
 
