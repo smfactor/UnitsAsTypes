@@ -67,24 +67,25 @@ module Final where
   √ : Float → Float
   √ x = newtonian x 0.0000001 2.0
   
-
+  data BaseU : Set where
+    noU      : BaseU
+    meter    : BaseU
+    meter-   : BaseU
+    gram     : BaseU
+    gram-    : BaseU
+    second   : BaseU
+    second-  : BaseU
+    ampere   : BaseU
+    ampere-  : BaseU
+    kelvin   : BaseU
+    kelvin-  : BaseU
+    candela  : BaseU
+    candela- : BaseU
+    mol      : BaseU
+    mol-     : BaseU
     
   data Units : Set where
-    noU      : Units
-    meter    : Units
-    meter-   : Units
-    gram     : Units
-    gram-    : Units
-    second   : Units
-    second-  : Units
-    ampere   : Units
-    ampere-  : Units
-    kelvin   : Units
-    kelvin-  : Units
-    candela  : Units
-    candela- : Units
-    mol      : Units
-    mol-     : Units
+    U        : BaseU → Units
     _u×_     : Units → Units → Units
 
   infixl 10 _u×_
@@ -153,119 +154,119 @@ module Final where
     CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
 
   filternoU : Units → Units
-  filternoU (x u× noU) = filternoU x
-  filternoU (noU u× x) = filternoU x
+  filternoU (x u× (U noU)) = filternoU x
+  filternoU (U noU u× x) = filternoU x
   filternoU (x u× x1) with filternoU x | filternoU x1
-  ... | noU | noU = noU
-  ... | u | noU = u
-  ... | noU | u = u
+  ... | U noU | U noU = U noU
+  ... | u | U noU = u
+  ... | U noU | u = u
   ... | u1 | u2 = u1 u× u2
   filternoU x = x
 
   flip : Units → Units
-  flip noU = noU
-  flip meter = meter-
-  flip meter- = meter
-  flip gram = gram-
-  flip gram- = gram
-  flip second = second-
-  flip second- = second
-  flip ampere = ampere-
-  flip ampere- = ampere
-  flip kelvin = kelvin-
-  flip kelvin- = kelvin
-  flip candela = candela-
-  flip candela- = candela
-  flip mol = mol-
-  flip mol- = mol
+  flip (U noU) = U noU
+  flip (U meter) = (U meter-)
+  flip (U meter-) = (U meter)
+  flip (U gram) = U gram-
+  flip (U gram-) = U gram
+  flip (U second-) = U second-
+  flip (U second-) = U second
+  flip (U ampere) = U ampere-
+  flip (U ampere-) = U ampere
+  flip (U kelvin) = U kelvin-
+  flip (U kelvin-) = U kelvin
+  flip candela = U candela-
+  flip candela- = U candela
+  flip mol = U mol-
+  flip mol- = U mol
   flip (x1 u× x2) = (flip x1) u× (flip x2)
 
   cancel : Units → Units → Units
-  cancel noU x = x
-  cancel meter noU = meter
-  cancel meter meter- = noU
-  cancel meter (noU u× y1) = cancel meter y1
-  cancel meter (meter- u× y1) = y1
-  cancel meter ((y u× y1) u× y2) = cancel meter (y u× (y1 u× y2))
-  cancel meter (x u× y) = x u× cancel meter y
-  cancel meter- noU = meter-
-  cancel meter- meter = noU
-  cancel meter- (noU u× y1) = cancel meter- y1
-  cancel meter- (meter u× y1) = y1
-  cancel meter- ((y u× y1) u× y2) = cancel meter- (y u× (y1 u× y2))
-  cancel meter- (x u× y) = x u× cancel meter- y
-  cancel gram noU = gram
-  cancel gram gram- = noU
-  cancel gram (noU u× y1) = cancel gram y1
-  cancel gram (gram- u× y1) = y1
-  cancel gram ((y u× y1) u× y2) = cancel gram (y u× (y1 u× y2))
-  cancel gram (x u× y) = x u× cancel gram y
-  cancel gram- noU = gram-
-  cancel gram- gram = noU
-  cancel gram- (noU u× y1) = cancel gram- y1
-  cancel gram- (gram u× y1) = y1
-  cancel gram- ((y u× y1) u× y2) = cancel gram- (y u× (y1 u× y2))
-  cancel gram- (x u× y) = x u× cancel gram- y
-  cancel second noU = second
-  cancel second second- = noU
-  cancel second (noU u× y1) = cancel second y1
-  cancel second (second- u× y1) = y1
-  cancel second ((y u× y1) u× y2) = cancel second (y u× (y1 u× y2))
-  cancel second (x u× y) = x u× cancel second y
-  cancel second- noU = second-
-  cancel second- second = noU
-  cancel second- (noU u× y1) = cancel second- y1
-  cancel second- (second u× y1) = y1
-  cancel second- ((y u× y1) u× y2) = cancel second- (y u× (y1 u× y2))
-  cancel second- (x u× y) = x u× cancel second- y
-  cancel ampere noU = ampere
-  cancel ampere ampere- = noU
-  cancel ampere (noU u× y1) = cancel ampere y1
-  cancel ampere (ampere- u× y1) = y1
-  cancel ampere ((y u× y1) u× y2) = cancel ampere (y u× (y1 u× y2))
-  cancel ampere (x u× y) = x u× cancel ampere y
-  cancel ampere- noU = ampere-
-  cancel ampere- ampere = noU
-  cancel ampere- (noU u× y1) = cancel ampere- y1
-  cancel ampere- (ampere u× y1) = y1
-  cancel ampere- ((y u× y1) u× y2) = cancel ampere- (y u× (y1 u× y2))
-  cancel ampere- (x u× y) = x u× cancel ampere- y
-  cancel kelvin noU = kelvin
-  cancel kelvin kelvin- = noU
-  cancel kelvin (noU u× y1) = cancel kelvin y1
-  cancel kelvin (kelvin- u× y1) = y1
-  cancel kelvin ((y u× y1) u× y2) = cancel kelvin (y u× (y1 u× y2))
-  cancel kelvin (x u× y) = x u× cancel kelvin y
-  cancel kelvin- noU = kelvin-
-  cancel kelvin- kelvin = noU
-  cancel kelvin- (noU u× y1) = cancel kelvin- y1
-  cancel kelvin- (kelvin u× y1) = y1
-  cancel kelvin- ((y u× y1) u× y2) = cancel kelvin- (y u× (y1 u× y2))
-  cancel kelvin- (x u× y) = x u× cancel kelvin- y
-  cancel candela noU = candela
-  cancel candela candela- = noU
-  cancel candela (noU u× y1) = cancel candela y1
-  cancel candela (candela- u× y1) = y1
-  cancel candela ((y u× y1) u× y2) = cancel candela (y u× (y1 u× y2))
-  cancel candela (x u× y) = x u× cancel candela y
-  cancel candela- noU = candela-
-  cancel candela- candela = noU
-  cancel candela- (noU u× y1) = cancel candela- y1
-  cancel candela- (candela u× y1) = y1
-  cancel candela- ((y u× y1) u× y2) = cancel candela- (y u× (y1 u× y2))
-  cancel candela- (x u× y) = x u× cancel candela- y
-  cancel mol noU = mol
-  cancel mol mol- = noU
-  cancel mol (noU u× y1) = cancel mol y1
-  cancel mol (mol- u× y1) = y1
-  cancel mol ((y u× y1) u× y2) = cancel mol (y u× (y1 u× y2))
-  cancel mol (x u× y) = x u× cancel mol y
-  cancel mol- noU = mol-
-  cancel mol- mol = noU
-  cancel mol- (noU u× y1) = cancel mol- y1
-  cancel mol- (mol u× y1) = y1
-  cancel mol- ((y u× y1) u× y2) = cancel mol- (y u× (y1 u× y2))
-  cancel mol- (x u× y) = x u× cancel mol- y
+  cancel (U noU) x = x
+  cancel (U meter) (U noU) = (U meter)
+  cancel (U meter) (U meter-) = U noU
+  cancel (U meter) (noU u× y1) = cancel (U meter) y1
+  cancel (U meter) ((U meter-) u× y1) = y1
+  cancel (U meter) ((y u× y1) u× y2) = cancel (U meter) (y u× (y1 u× y2))
+  cancel (U meter) (x u× y) = x u× cancel (U meter) y
+  cancel (U meter-) (U noU) = U meter-
+  cancel (U meter-) (U meter) = U noU
+  cancel (U meter-) (noU u× y1) = cancel (U meter-) y1
+  cancel (U meter-) ((U meter) u× y1) = y1
+  cancel (U meter-) ((y u× y1) u× y2) = cancel (U meter-) (y u× (y1 u× y2))
+  cancel (U meter-) (x u× y) = x u× cancel (U meter-) y
+  cancel (U gram) (U noU) = U gram
+  cancel (U gram) (U gram-) = U noU
+  cancel (U gram) (noU u× y1) = cancel (U gram) y1
+  cancel (U gram) ((U gram-) u× y1) = y1
+  cancel (U gram) ((y u× y1) u× y2) = cancel (U gram) (y u× (y1 u× y2))
+  cancel (U gram) (x u× y) = x u× cancel (U gram) y
+  cancel (U gram-) (U noU) = U gram-
+  cancel (U gram-) (U gram) = U noU
+  cancel (U gram-) (U noU u× y1) = cancel (U gram-) y1
+  cancel (U gram-) ((U gram) u× y1) = y1
+  cancel (U gram-) ((y u× y1) u× y2) = cancel (U gram-) (y u× (y1 u× y2))
+  cancel (U gram-) (x u× y) = x u× cancel (U gram-) y
+  cancel (U second-) (U noU) = U second
+  cancel (U second-) (U second-) = U noU
+  cancel (U second-) (noU u× y1) = cancel (U second-) y1
+  cancel (U second-) ((U second-) u× y1) = y1
+  cancel (U second-) ((y u× y1) u× y2) = cancel (U second-) (y u× (y1 u× y2))
+  cancel (U second-) (x u× y) = x u× cancel (U second-) y
+  cancel (U second-) (U noU) = U second-
+  cancel (U second-) (U second-) = U noU
+  cancel (U second-) (U noU u× y1) = cancel (U second-) y1
+  cancel (U second-) ((U second) u× y1) = y1
+  cancel (U second-) ((y u× y1) u× y2) = cancel (U second-) (y u× (y1 u× y2))
+  cancel (U second-) (x u× y) = x u× cancel (U second-) y
+  cancel (U ampere) (U noU) = U ampere
+  cancel (U ampere) (U ampere-) = U noU
+  cancel (U ampere) (U noU u× y1) = cancel (U ampere) y1
+  cancel (U ampere) (U ampere- u× y1) = y1
+  cancel (U ampere) ((y u× y1) u× y2) = cancel (U ampere) (y u× (y1 u× y2))
+  cancel (U ampere) (x u× y) = x u× cancel (U ampere) y
+  cancel (U ampere-) (U noU) = U ampere-
+  cancel (U ampere-) (U ampere) = U noU
+  cancel (U ampere-) (noU u× y1) = cancel (U ampere-) y1
+  cancel (U ampere-) ((U ampere) u× y1) = y1
+  cancel (U ampere-) ((y u× y1) u× y2) = cancel (U ampere-) (y u× (y1 u× y2))
+  cancel (U ampere-) (x u× y) = x u× cancel (U ampere-) y
+  cancel (U kelvin) (U noU) = U kelvin
+  cancel (U kelvin) (U kelvin-) = U noU
+  cancel (U kelvin) (U noU u× y1) = cancel (U kelvin) y1
+  cancel (U kelvin) (U kelvin- u× y1) = y1
+  cancel (U kelvin) ((y u× y1) u× y2) = cancel (U kelvin) (y u× (y1 u× y2))
+  cancel (U kelvin) (x u× y) = x u× cancel (U kelvin) y
+  cancel (U kelvin-) (U noU) = U kelvin-
+  cancel (U kelvin-) (U kelvin) = U noU
+  cancel (U kelvin-) (U noU u× y1) = cancel (U kelvin-) y1
+  cancel (U kelvin-) (U kelvin u× y1) = y1
+  cancel (U kelvin-) ((y u× y1) u× y2) = cancel (U kelvin-) (y u× (y1 u× y2))
+  cancel (U kelvin-) (x u× y) = x u× cancel (U kelvin-) y
+  cancel (U candela (U noU) = U candela
+  cancel (U candela U candela- = U noU
+  cancel (U candela (noU u× y1) = cancel U candela y1
+  cancel (U candela (U candela- u× y1) = y1
+  cancel (U candela ((y u× y1) u× y2) = cancel candela (y u× (y1 u× y2))
+  cancel (U candela (x u× y) = x u× cancel candela y
+  cancel (U candela- (U noU) = candela-
+  cancel (U candela- candela = noU
+  cancel (U candela- (noU u× y1) = cancel candela- y1
+  cancel (U candela- (candela u× y1) = y1
+  cancel (U candela- ((y u× y1) u× y2) = cancel candela- (y u× (y1 u× y2))
+  cancel (U candela- (x u× y) = x u× cancel candela- y
+  cancel (U mol (U noU) = mol
+  cancel (U mol mol- = noU
+  cancel (U mol (noU u× y1) = cancel mol y1
+  cancel (U mol (mol- u× y1) = y1
+  cancel (U mol ((y u× y1) u× y2) = cancel mol (y u× (y1 u× y2))
+  cancel (U mol (x u× y) = x u× cancel mol y
+  cancel (U mol- (U noU) = mol-
+  cancel (U mol- mol = noU
+  cancel (U mol- (noU u× y1) = cancel mol- y1
+  cancel (U mol- (mol u× y1) = y1
+  cancel (U mol- ((y u× y1) u× y2) = cancel mol- (y u× (y1 u× y2))
+  cancel (U mol- (x u× y) = x u× cancel mol- y
   cancel x y = x u× y
 
   reduce : Units → Units
@@ -276,23 +277,23 @@ module Final where
   reduce u = u
 
   v : Units
-  v = meter u× meter-
+  v = (U meter) u× meter-
   v' : Units
-  v' = (meter u× second) u× ((second- u× second-))
-  testv' : (reduce v') == (meter u× second-)
+  v' = ((U meter) u× second) u× (((U second-) u× second-))
+  testv' : (reduce v') == ((U meter) u× second-)
   testv' = Refl
   testv : reduce v == noU
   testv = Refl
 
   order : Units → Units
   order (noU u× u2) = order u2
-  order (meter u× u2) = meter u× order u2
-  order (meter- u× u2) = order u2 u× meter-
-  order (gram u× u2) = {!!}
-  order (gram- u× u2) = {!!}
-  order (second u× u2) = {!!}
-  order (second- u× u2) = {!!}
-  order (ampere u× u2) = {!!}
+  order ((U meter) u× u2) = (U meter) u× order u2
+  order ((U meter-) u× u2) = order u2 u× (U meter-
+  order ((U gram) u× u2) = {!!}
+  order ((U gram-) u× u2) = {!!}
+  order ((U second) u× u2) = {!!}
+  order ((U second-) u× u2) = {!!}
+  order ((U ampere) u× u2) = {!!}
   order (ampere- u× u2) = {!!}
   order (kelvin u× u2) = {!!}
   order (kelvin- u× u2) = {!!}
@@ -308,20 +309,12 @@ module Final where
   
   
  --floats all units of type units to the front
-  order-m : Units → Units → Units
-  order-m (u u× us) = meter u× (order-m us)
-  order-m (u u× us) = order us u× u
-  order-m u = u
-  --floats all second to the front
-  order-s : Units → Units
-  order-s (second u× us) = second u× (order-s us)
-  order-s (u u× us) = order us u× u
-  order-s u = u
-  --floats all grams to the front
-  order-g : Units → Units
-  order-g (gram u× us) = gram u×  (order-g us)
-  order-g (u u× us) = order us u× u
-  order-g u = u
+  order-u : Units → Units → Units
+  order-u (u u× us) = (U meter) u× (order-u us)
+  order-u (u u× us) = order us u× u
+  order-u u = u
+
+
 
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF U
@@ -337,11 +330,11 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 --  test : UF (
-  g : UF (meter u× (second- u× second-))
-  g = V (~ 9.8) (meter u× (second- u× second-))
+  g : UF ((U meter) u× ((U second-) u× second-))
+  g = V (~ 9.8) ((U meter) u× ((U second-) u× second-))
 
---  displacement : UF second → UF meter
---  displacement t = V 0.5 noU `× g `× t `× t
+--  displacement : UF (U second-) → UF (U meter)
+--  displacement t = V 0.5 (U noU) `× g `× t `× t
 
   compute : {u : Units} → UF u → Float
   compute {u} (V f .u) = f
@@ -370,40 +363,40 @@ module Final where
 
 -- Library for example of code
   module Projectile where
-    cos : UF noU → UF noU
+    cos : UF (U noU) → UF noU
     cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) noU
-    sin : UF noU → UF noU
+    sin : UF (U noU) → UF noU
     sin θ = V (primSin (compute θ)) noU
 --    sqrt : {u : Units} → UF u → UF u
 --    sqrt = {!!}
-    g' : UF (meter u× (second- u× second-))
-    g' = V (~ 9.8) (meter u× (second- u× second-))
+    g' : UF ((U meter) u× ((U second-) u× second-))
+    g' = V (~ 9.8) ((U meter) u× ((U second-) u× second-))
 
-    h-dist-trav : UF (meter u× second-)                --velocity
-                  → UF noU                             --angle
-                  → UF (meter u× (second- u× second-)) -- gravitational constant
-                  → UF meter                           -- distance traveled
+    h-dist-trav : UF ((U meter) u× second-)                --velocity
+                  → UF (U noU)                             --angle
+                  → UF ((U meter) u× ((U second-) u× second-)) -- gravitational constant
+                  → UF (U meter)                           -- distance traveled
     h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ))
 
-    max-height : UF (meter u× second-)   --velocity
-                → UF noU                               --angle
-                → UF meter                             -- initial height
-                → UF (meter u× (second- u× second-)) -- gravitational constant
-                → UF meter                                -- maximum height
+    max-height : UF ((U meter) u× second-)   --velocity
+                → UF (U noU)                               --angle
+                → UF (U meter)                             -- initial height
+                → UF ((U meter) u× ((U second-) u× second-)) -- gravitational constant
+                → UF (U meter)                                -- maximum height
     max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g')) `+ y₀
 
     treduce :  Units
-    treduce = reduce (noU u× (meter u× (second- u× second-)))
+    treduce = reduce (noU u× ((U meter) u× ((U second-) u× second-)))
 
-    vtest : UF (meter u× second-)
-    vtest = V 1.0 meter `÷ V 1.0 second
-{-    v2test : UF ((meter u× meter) u× (second- u× second-))
+    vtest : UF ((U meter) u× second-)
+    vtest = V 1.0 (U meter) `÷ V 1.0 second
+{-    v2test : UF (((U meter) u× (U meter)) u× ((U second-) u× second-))
     v2test = vtest `× vtest
-    gytest : UF (meter u× meter u× (second- u× second-))
-    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `× V 1.0 meter
-    v2gy : UF (meter u× meter u× (second- u× second-))
+    gytest : UF ((U meter) u× (U meter) u× ((U second-) u× second-))
+    gytest = V 2.0 (U noU) `× V (~ 9.8) ((U meter) u× ((U second-) u× second-)) `× V 1.0 (U meter)
+    v2gy : UF ((U meter) u× (U meter) u× ((U second-) u× second-))
     v2gy = v2test `+ gytest
 
-    sqrt-test : (UF (meter u× second-))
+    sqrt-test : (UF ((U meter) u× second-))
     sqrt-test = {!`√ v2gy!}
 -}
