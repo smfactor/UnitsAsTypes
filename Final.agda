@@ -152,6 +152,19 @@ module Final where
   data RecursionPermission {A : Set} : List A → Set where
     CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
 
+  filternoU : Units → Units
+  filternoU (x u× noU) = filternoU x
+  filternoU (noU u× x) = filternoU x
+--  filternoU (x u× (noU ^-1)) = filternoU x
+--  filternoU ((noU ^-1) u× x) = filternoU x
+  filternoU (x u× x1) with filternoU x | filternoU x1
+  ... | noU | noU = noU
+  ... | u | noU = u
+  ... | noU | u = u
+  ... | u1 | u2 = u1 u× u2
+  --filternoU (x ^-1) = filternoU x ^-1
+  filternoU x = x
+
   flip : Units → Units
   flip noU = noU
   flip meter = meter-
@@ -286,7 +299,7 @@ module Final where
 --  infixl 8 _`÷_
   infixl 4 _`+_
   infixl 4 _`-_
-
+--  test : UF (
   g : UF (meter u× (second- u× second-))
   g = V (~ 9.8) (meter u× (second- u× second-))
 
@@ -328,12 +341,21 @@ module Final where
 --    sqrt = {!!}
     g' : UF (meter u× (second- u× second-))
     g' = V (~ 9.8) (meter u× (second- u× second-))
-
+    t1 : UF (meter u× second-) → UF noU → UF (meter u× second-)
+    t1 v θ = v `× cos θ
+    t1' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF second
+    t1' v θ g = v `× cos θ `÷ g
+    t1'' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF (meter u× second-)
+    t1'' v θ g = V 2.0 noU `× (v `× sin θ)
+    t1''' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF meter
+    t1''' v θ g = {!(t1' v θ g) `× (t1'' v θ g)!}
+    sec : UF second -> UF second- -> UF noU
+    sec s s- = s `× s-
     h-dist-trav : UF (meter u× second-)   --velocity
                   → UF noU                               --angle
                   → UF (meter u× (second- u× second-)) -- gravitational constant
                   → UF meter                                -- distance traveled
-    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ))
+    h-dist-trav v θ g = {! ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ)) !}
 
     max-height : UF (meter u× second-)   --velocity
                 → UF noU                               --angle
@@ -344,7 +366,7 @@ module Final where
 
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second- u× second-)))
-
+{-
     vtest : UF (meter u× second-)
     vtest = V 1.0 meter `÷ V 1.0 second
     v2test : UF (meter u× meter u× (second- u× second-))
@@ -357,4 +379,4 @@ module Final where
 
     sqrt-test : (UF (meter u× second-))
     sqrt-test = {!`√ v2gy!}
-
+-}
