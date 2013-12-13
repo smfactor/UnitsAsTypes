@@ -415,19 +415,19 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 
---  g : UF (meter u× ((second u× second) ^-1))
---  g = V (~ 9.8) (meter u× (second u× second) ^-1)
+  g : UF (meter u× (second- u× second-))
+  g = V (~ 9.8) (meter u× (second- u× second-))
 
 --  displacement : UF second → UF meter
 --  displacement t = V 0.5 noU `× g `× t `× t
 
-  --compute : {u : Units} → UF u → Float
- -- compute {u} (V f .u) = f
---  compute {u} (P f p .u) = prefixed f p
---  compute (x `+ x₁) = compute x f+ compute x₁
---  compute (x `- x₁) = compute x f− compute x₁
---  compute (x `× x₁) = compute x f× compute x₁
---  compute (x `÷ x₁) = compute x f÷ compute x₁
+  compute : {u : Units} → UF u → Float
+  compute {u} (V f .u) = f
+  compute {u} (P f p .u) = prefixed f p
+  compute (x `+ x₁) = compute x f+ compute x₁
+  compute (x `- x₁) = compute x f− compute x₁
+  compute (x `× x₁) = compute x f× compute x₁
+  compute (x `÷ x₁) = compute x f÷ compute x₁
 --  compute (`√ x) = √ (compute x)
 
 
@@ -560,7 +560,7 @@ module Final where
 
 
 
- {- Library for example of code
+-- Library for example of code
   module Projectile where
     cos : UF noU → UF noU
     cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) noU
@@ -568,35 +568,35 @@ module Final where
     sin θ = V (primSin (compute θ)) noU
 --    sqrt : {u : Units} → UF u → UF u
 --    sqrt = {!!}
-    g' : UF (meter u× ((second u× second) ^-1))
-    g' = V (~ 9.8) (meter u× (second u× second) ^-1)
+    g' : UF (meter u× (second- u× second-))
+    g' = V (~ 9.8) (meter u× (second- u× second-))
 
-    h-dist-trav : UF (meter u× (second ^-1))   --velocity
+    h-dist-trav : UF (meter u× second-)   --velocity
                   → UF noU                               --angle
-                  → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                  → UF (meter u× (second- u× second-)) -- gravitational constant
                   → UF meter                                -- distance traveled
-    h-dist-trav v θ g = v `× cos θ `÷ g `× (V 2.0 noU `× (v `× sin θ))
+    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ))
 
-    max-height : UF (meter u× (second ^-1))   --velocity
+    max-height : UF (meter u× second-)   --velocity
                 → UF noU                               --angle
                 → UF meter                             -- initial height
-                → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
+                → UF (meter u× (second- u× second-)) -- gravitational constant
                 → UF meter                                -- maximum height
-    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g))
+    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g'))
 
     treduce :  Units
-    treduce = reduce (noU u× (meter u× (second u× second) ^-1))
+    treduce = reduce (noU u× (meter u× (second- u× second-)))
 
-    vtest : UF (meter u× second ^-1)
+    vtest : UF (meter u× second-)
     vtest = V 1.0 meter `÷ V 1.0 second
-    v2test : UF (meter u× meter u× (second u× second) ^-1)
+    v2test : UF (meter u× meter u× (second- u× second-))
     v2test = vtest `× vtest
-    gytest : UF (meter u× meter u× (second u× second) ^-1)
-    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second u× second) ^-1) `×
+    gytest : UF (meter u× meter u× (second- u× second-))
+    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `×
                V 1.0 meter
-    v2gy : UF (meter u× meter u× (second u× second) ^-1)
+    v2gy : UF (meter u× meter u× (second- u× second-))
     v2gy = v2test `+ gytest
 
-    sqrt-test : (UF (meter u× second ^-1))
+    sqrt-test : (UF (meter u× second-))
     sqrt-test = {!`√ v2gy!}
--}
+
