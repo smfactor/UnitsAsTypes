@@ -70,22 +70,22 @@ module Final where
 
     
   data Units : Set where
-    noU     : Units
-    meter   : Units
-    meter-  : Units
-    gram    : Units
-    gram-   : Units
-    second  : Units
-    second- : Units
-    ampere  : Units
-    ampere- : Units
-    kelvin  : Units
-    kelvin- : Units
-    candela : Units
+    noU      : Units
+    meter    : Units
+    meter-   : Units
+    gram     : Units
+    gram-    : Units
+    second   : Units
+    second-  : Units
+    ampere   : Units
+    ampere-  : Units
+    kelvin   : Units
+    kelvin-  : Units
+    candela  : Units
     candela- : Units
-    mol     : Units
-    mol-    : Units
-    _u×_    : Units → Units → Units
+    mol      : Units
+    mol-     : Units
+    _u×_     : Units → Units → Units
 
   infixl 10 _u×_
 
@@ -134,7 +134,7 @@ module Final where
   prefixed f zepto = f f÷ 1.0e21
   prefixed f yocto = f f÷ 1.0e24
 
-
+  
 {-
   listUtoU : List Units → Units
   listUtoU [] = noU
@@ -207,7 +207,25 @@ module Final where
   reduce x | t , b with cancel t b
   reduce x | t , b | t' , [] = filternoU (listUtoU t')
   reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
--}
+-} 
+{- Suffix xs ys means that xs is a suffix of ys -}
+
+  data Suffix {A : Set} : List A → List A → Set where
+    Stop : ∀ {x xs} → Suffix xs (x :: xs)
+    Drop : ∀ {y xs ys} → Suffix xs ys → Suffix xs (y :: ys)
+
+  {- TASK 2.1 : Show that suffix is transitive. -}
+  suffix-trans : {A : Set} → {xs ys zs : List A} → Suffix xs ys → Suffix ys zs → Suffix xs zs
+  suffix-trans Stop Stop = Drop Stop
+  suffix-trans Stop (Drop q) =  Drop (suffix-trans Stop q)
+  suffix-trans (Drop p) Stop = Drop (suffix-trans p Stop)
+  suffix-trans (Drop p) (Drop q) = Drop (suffix-trans p (suffix-trans Stop q))
+
+  data RecursionPermission {A : Set} : List A → Set where
+    CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
+
+  cancel : Units -> Units -> Units
+  cancel = ?
 
   flip : Units → Units
   flip noU = noU
@@ -376,7 +394,7 @@ module Final where
 
   reduce : Units → Units
   reduce (noU u× u1) = reduce u1
-  reduce (meter u× u1) = {!cancel meter u1!}
+  reduce (meter u× u1) = {!cancel meter (reduce u1)!}
   reduce (meter- u× u1) = {!!}
   reduce (gram u× u1) = {!!}
   reduce (gram- u× u1) = {!!}
@@ -391,7 +409,7 @@ module Final where
   reduce (mol u× u1) = {!!}
   reduce (mol- u× u1) = {!!}
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
-  reduce x = x
+  reduce u = u
 
 {-
   v : Units
