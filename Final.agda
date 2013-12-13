@@ -155,14 +155,11 @@ module Final where
   filternoU : Units → Units
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
---  filternoU (x u× (noU ^-1)) = filternoU x
---  filternoU ((noU ^-1) u× x) = filternoU x
   filternoU (x u× x1) with filternoU x | filternoU x1
   ... | noU | noU = noU
   ... | u | noU = u
   ... | noU | u = u
   ... | u1 | u2 = u1 u× u2
-  --filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
 
   flip : Units → Units
@@ -291,8 +288,8 @@ module Final where
     P    : (f : Float) → (p : Prefix) → (U : Units) → UF U
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
-    _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
-    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× flip U2))
+    _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (filternoU (reduce (U1 u× U2)))
+    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (filternoU (reduce (U1 u× flip U2)))
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
