@@ -209,10 +209,10 @@ module Final where
   cancel (U gram-) (x u× y) = x u× cancel (U gram-) y
   cancel (U second) (U noU) = U second
   cancel (U second) (U second-) = U noU
-  cancel (U second) ((U noU) u× y1) = cancel (U second-) y1
+  cancel (U second) ((U noU) u× y1) = cancel (U second) y1
   cancel (U second) ((U second-) u× y1) = y1
-  cancel (U second) ((y u× y1) u× y2) = cancel (U second-) (y u× (y1 u× y2))
-  cancel (U second) (x u× y) = x u× cancel (U second-) y
+  cancel (U second) ((y u× y1) u× y2) = cancel (U second) (y u× (y1 u× y2))
+  cancel (U second) (x u× y) = x u× cancel (U second) y
   cancel (U second-) (U noU) = U second-
   cancel (U second-) (U second-) = U noU
   cancel (U second-) (U noU u× y1) = cancel (U second-) y1
