@@ -224,8 +224,26 @@ module Final where
   data RecursionPermission {A : Set} : List A → Set where
     CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
 
-  cancel : Units → Units → Units
-  cancel = {!!}
+  cancel : Units -> Units -> Units
+  cancel = ?
+
+  flip : Units → Units
+  flip noU = noU
+  flip meter = meter-
+  flip meter- = meter
+  flip gram = gram-
+  flip gram- = gram
+  flip second = second-
+  flip second- = second
+  flip ampere = ampere-
+  flip ampere- = ampere
+  flip kelvin = kelvin-
+  flip kelvin- = kelvin
+  flip candela = candela-
+  flip candela- = candela
+  flip mol = mol-
+  flip mol- = mol
+  flip (x1 u× x2) = (flip x1) u× (flip x2)
 
   reduce : Units → Units
   reduce (noU u× u1) = reduce u1
@@ -317,7 +335,7 @@ module Final where
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
---    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× flip U2))
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
