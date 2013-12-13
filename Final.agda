@@ -72,17 +72,22 @@ module Final where
   data Units : Set where
     noU     : Units
     meter   : Units
+    meter-  : Units
     gram    : Units
+    gram-   : Units
     second  : Units
+    second- : Units
     ampere  : Units
+    ampere- : Units
     kelvin  : Units
+    kelvin- : Units
     candela : Units
+    candela- : Units
     mol     : Units
+    mol-    : Units
     _u×_    : Units → Units → Units
-    _^-1    : Units → Units
 
   infixl 10 _u×_
-  infixl 11 _^-1    
 
 
   data Prefix : Set where
@@ -130,7 +135,7 @@ module Final where
   prefixed f yocto = f f÷ 1.0e24
 
 
-
+{-
   listUtoU : List Units → Units
   listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
@@ -202,7 +207,10 @@ module Final where
   reduce x | t , b with cancel t b
   reduce x | t , b | t' , [] = filternoU (listUtoU t')
   reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
-
+-}
+  reduce : Units → Units
+  reduce u = {!!}
+{-
   v : Units
   v = (meter u× (meter ^-1))
     
@@ -225,7 +233,7 @@ module Final where
 
   testv : reduce v == noU
   testv = Refl
-
+-}
 {-
   --Adds one to the pair if the unit is already in the list,
   -- appends a new pair to the list if none exists
@@ -275,19 +283,19 @@ module Final where
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
-    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
+--    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
-  infixl 8 _`÷_
+--  infixl 8 _`÷_
   infixl 4 _`+_
   infixl 4 _`-_
 
-  g : UF (meter u× ((second u× second) ^-1))
-  g = V (~ 9.8) (meter u× (second u× second) ^-1)
+--  g : UF (meter u× ((second u× second) ^-1))
+--  g = V (~ 9.8) (meter u× (second u× second) ^-1)
 
-  displacement : UF second → UF meter
-  displacement t = V 0.5 noU `× g `× t `× t
+--  displacement : UF second → UF meter
+--  displacement t = V 0.5 noU `× g `× t `× t
 
   compute : {u : Units} → UF u → Float
   compute {u} (V f .u) = f
@@ -295,29 +303,9 @@ module Final where
   compute (x `+ x₁) = compute x f+ compute x₁
   compute (x `- x₁) = compute x f− compute x₁
   compute (x `× x₁) = compute x f× compute x₁
-  compute (x `÷ x₁) = compute x f÷ compute x₁
+--  compute (x `÷ x₁) = compute x f÷ compute x₁
 --  compute (`√ x) = √ (compute x)
 
-  tm/s² : UF (meter u× ((second u× second) ^-1))
-  tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
-
-  computetest : Float
-  computetest = compute (displacement (V 1.0 second))
-
-  mm : UF meter
-  mm = V 1.0 meter
-  ss : UF second
-  ss = V 1.0 second
-
---if doing
-  --dont leav unitland
-  --whole program is of type UF 
-  --runtimes system actually runs compuation
-
-    --give anything that compute uf second and will compute uf meter
-
-  dis1sec : Float
-  dis1sec = compute (displacement (V 1.0 second))
 
 {-
   data Basic : Units → Set where
@@ -346,7 +334,7 @@ module Final where
     B÷R  : (U1 U2 : Units) → Basic U1 → Reduced U2 → {!!} → Reduced (U1 u× U2 ^-1)
 --    _^-1    : Units → Units
 -}
-
+{-
   count' : Units → Bool → (Float × Float × Float × Float × Float × Float × Float) → (Float × Float × Float × Float × Float × Float × Float)
   count' noU True (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo
   count' meter True (m , g , s , a , k , c , mo) = m f+ 1.0 , g , s , a , k , c , mo
@@ -366,16 +354,16 @@ module Final where
   count' mol False (m , g , s , a , k , c , mo) = m , g , s , a , k , c , mo f− 1.0
   count' (u u× u1) flag xs with count' u flag xs
   ... | xs' = count' u1 flag xs'
-  count' (u ^-1) True xs = count' u False xs
-  count' (u ^-1) False xs = count' u True xs
+  --count' (u ^-1) True xs = count' u False xs
+--  count' (u ^-1) False xs = count' u True xs
 
   count : Units → Float × Float × Float × Float × Float × Float × Float
   count u = count' u True (0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0)
-    
+  -}  
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
 --    ReflU : (u1
-
+{-
   data Same : Units → Units → Set where
     Refl  : (u : Units) → (u : Units) → Same u u
     Sym   : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Same (reduce u1) (reduce u2)
@@ -384,8 +372,8 @@ module Final where
 
 --  Equivalent : Set where
   data Equivalent : Units → Units → Set where
-    Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
-
+    Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2-}
+{-
   --proof that reduce x is equivalent to x
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
   reduceEquiv u with cancel (fst (makeFrac u)) (snd (makeFrac u))
@@ -403,7 +391,7 @@ module Final where
   reduceEquiv u | t :: ts , [] = {!!}
   reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
   ... | P1 | P2 = {!!}
--}
+-
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
   reduceEquiv noU = Equiv noU noU Refl
   reduceEquiv meter = Equiv meter meter Refl
@@ -425,7 +413,7 @@ module Final where
   reduceEquiv (u ^-1) | t :: ts , [] = {!!}
   reduceEquiv (u ^-1) | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
   ... | P1 | P2 = {!!}
-
+-}
   --proof that reduce x is in reduced form
   reduced-X : {!!}
   reduced-X = {!!}
@@ -449,7 +437,7 @@ module Final where
 
 
 
- {- Library for example of code -}
+ {- Library for example of code
   module Projectile where
     cos : UF noU → UF noU
     cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) noU
@@ -488,3 +476,4 @@ module Final where
 
     sqrt-test : (UF (meter u× second ^-1))
     sqrt-test = {!`√ v2gy!}
+-}
