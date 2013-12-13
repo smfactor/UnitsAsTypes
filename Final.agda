@@ -249,58 +249,49 @@ module Final where
   cancel (U candela (U candela- u× y1) = y1
   cancel (U candela ((y u× y1) u× y2) = cancel candela (y u× (y1 u× y2))
   cancel (U candela (x u× y) = x u× cancel candela y
-  cancel (U candela- (U noU) = candela-
-  cancel (U candela- candela = noU
-  cancel (U candela- (noU u× y1) = cancel candela- y1
-  cancel (U candela- (candela u× y1) = y1
-  cancel (U candela- ((y u× y1) u× y2) = cancel candela- (y u× (y1 u× y2))
-  cancel (U candela- (x u× y) = x u× cancel candela- y
-  cancel (U mol (U noU) = mol
-  cancel (U mol mol- = noU
-  cancel (U mol (noU u× y1) = cancel mol y1
-  cancel (U mol (mol- u× y1) = y1
-  cancel (U mol ((y u× y1) u× y2) = cancel mol (y u× (y1 u× y2))
-  cancel (U mol (x u× y) = x u× cancel mol y
-  cancel (U mol- (U noU) = mol-
-  cancel (U mol- mol = noU
-  cancel (U mol- (noU u× y1) = cancel mol- y1
-  cancel (U mol- (mol u× y1) = y1
-  cancel (U mol- ((y u× y1) u× y2) = cancel mol- (y u× (y1 u× y2))
-  cancel (U mol- (x u× y) = x u× cancel mol- y
+  cancel (U candela-) (U noU) = candela-
+  cancel (U candela-) candela = noU
+  cancel (U candela-) (noU u× y1) = cancel candela- y1
+  cancel (U candela-) (candela u× y1) = y1
+  cancel (U candela-) ((y u× y1) u× y2) = cancel candela- (y u× (y1 u× y2))
+  cancel (U candela-) (x u× y) = x u× cancel candela- y
+  cancel (U mol) (U noU) = mol
+  cancel (U mol) mol- = noU
+  cancel (U mol) (noU u× y1) = cancel mol y1
+  cancel (U mol) (mol- u× y1) = y1
+  cancel (U mol) ((y u× y1) u× y2) = cancel mol (y u× (y1 u× y2))
+  cancel (U mol) (x u× y) = x u× cancel mol y
+  cancel (U mol-) (U noU) = mol-
+  cancel (U mol-) mol = noU
+  cancel (U mol-) (noU u× y1) = cancel mol- y1
+  cancel (U mol-) (mol u× y1) = y1
+  cancel (U mol-) ((y u× y1) u× y2) = cancel mol- (y u× (y1 u× y2))
+  cancel (U mol-) (x u× y) = x u× cancel mol- y
   cancel x y = x u× y
 
   reduce : Units → Units
-  reduce (noU u× u1) = reduce u1
-  reduce (u1 u× noU) = reduce u1
+  reduce ((U noU) u× u1) = reduce u1
+  reduce (u1 u× (U noU)) = reduce u1
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
   reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
 
-  v : Units
-  v = (U meter) u× meter-
-  v' : Units
-  v' = ((U meter) u× second) u× (((U second-) u× second-))
-  testv' : (reduce v') == ((U meter) u× second-)
-  testv' = Refl
-  testv : reduce v == noU
-  testv = Refl
-
   order : Units → Units
-  order (noU u× u2) = order u2
+  order ((U noU) u× u2) = order u2
   order ((U meter) u× u2) = (U meter) u× order u2
-  order ((U meter-) u× u2) = order u2 u× (U meter-
+  order ((U meter-) u× u2) = order u2 u× (U meter-)
   order ((U gram) u× u2) = {!!}
   order ((U gram-) u× u2) = {!!}
   order ((U second) u× u2) = {!!}
   order ((U second-) u× u2) = {!!}
   order ((U ampere) u× u2) = {!!}
-  order (ampere- u× u2) = {!!}
-  order (kelvin u× u2) = {!!}
-  order (kelvin- u× u2) = {!!}
-  order (candela u× u2) = {!!}
-  order (candela- u× u2) = {!!}
-  order (mol u× u2) = {!!}
-  order (mol- u× u2) = {!!}
+  order ((U ampere-) u× u2) = {!!}
+  order ((U kelvin) u× u2) = {!!}
+  order ((U kelvin-) u× u2) = {!!}
+  order ((U candela) u× u2) = {!!}
+  order ((U candela-) u× u2) = {!!}
+  order ((U mol) u× u2) = {!!}
+  order ((U mol-) u× u2) = {!!}
   order (u1 u× u2 u× u3) = {!!}
   order u = u
   
