@@ -442,7 +442,7 @@ module Final where
     _`-_ : {U : Units} → UF U → UF U → UF U
     _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2))
     _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (reduce (U1 u× U2 ^-1))
-    `√_  : {U : Units} → UF (U u× U) → UF U
+--    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
   infixl 8 _`÷_
@@ -462,7 +462,7 @@ module Final where
   compute (x `- x₁) = compute x f− compute x₁
   compute (x `× x₁) = compute x f× compute x₁
   compute (x `÷ x₁) = compute x f÷ compute x₁
-  compute (`√ x) = √ (compute x)
+--  compute (`√ x) = √ (compute x)
 
   tm/s² : UF (meter u× ((second u× second) ^-1))
   tm/s² = V (~ 4.9) meter `÷ (V 1.0 second `× V 1.0 second)
@@ -537,7 +537,6 @@ module Final where
 
   count : Units → Float × Float × Float × Float × Float × Float × Float
   count u = count' u True (0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0)
->>>>>>> 03a97d80feb5ece96fd6385f89d4e8a6595c8147
     
 --  data Units' : Units → Set where
 --    SameU : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Units' (reduce u1)
@@ -564,7 +563,8 @@ module Final where
   reduceEquiv u | [] , [] = {!!}
   reduceEquiv u | [] , b :: bs = {!!}
   reduceEquiv u | t :: ts , [] = {!!}
-  reduceEquiv u | t :: ts , b :: bs = {!!} --Equiv u (reduce u) {!!}
+  reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
+  ... | P1 | P2 = {!!}
 
   --proof that reduce x is in reduced form
   reduced-X : {!!}
@@ -590,26 +590,25 @@ module Final where
   module Projectile where
     cos : UF noU → UF noU
     cos = {!!}
---    sin : UF noU → UF noU
---    sin = {!!}
-    --sqrt : {u : Units} → UF u → UF u
-    --sqrt = {!!}
+    sin : UF noU → UF noU
+    sin = {!!}
+    sqrt : {u : Units} → UF u → UF u
+    sqrt = {!!}
     g' : UF (meter u× ((second u× second) ^-1))
     g' = V (~ 9.8) (meter u× (second u× second) ^-1)
 
     h-dist-trav : UF (meter u× (second ^-1))   --velocity
                   → UF noU                               --angle
-                  → UF meter                             -- initial height
                   → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                   → UF meter                                -- distance traveled
-    h-dist-trav v θ y₀ g = {! (v `× (cos θ) `÷ g) `× ((v `× sin θ) `+ (sqrt (((v `× sin θ)) `× (v `× (sin θ))) `+ ((V 2.0 noU) `× g `× y₀)))!}
+    h-dist-trav v θ g = v `× cos θ `÷ g `× (V 2.0 noU `× (v `× sin θ))
 
     max-height : UF (meter u× (second ^-1))   --velocity
                 → UF noU                               --angle
                 → UF meter                             -- initial height
                 → UF (meter u× ((second u× second) ^-1)) -- gravitational constant
                 → UF meter                                -- maximum height
-    max-height v θ y₀ g = ((v `× v {-`× sin θ `× sin θ-}) `÷ ((V (~ 2.0) noU) `× g))
+    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g))
 
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second u× second) ^-1))
