@@ -296,7 +296,7 @@ module Final where
   prefixed f yocto = f f÷ 1.0e24
 
 
-
+{-
   listUtoU : List Units → Units
   listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
@@ -363,12 +363,17 @@ module Final where
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
 
-  reduce : Units → Units 
-  reduce x with makeFrac x
-  reduce x | t , b with cancel t b
-  reduce x | t , b | t' , [] = filternoU (listUtoU t')
-  reduce x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
+  reduce' : Units → Units 
+  reduce' x with makeFrac x
+  reduce' x | t , b with cancel t b
+  reduce' x | t , b | t' , [] = filternoU (listUtoU t')
+  reduce' x | t , b | t' , b' = filternoU (listUtoU t' u× (listUtoU b' ^-1))
+-}
 
+  reduce : Units → Units
+  reduce x = ?
+
+{-
   v : Units
   v = (meter u× (meter ^-1))
     
@@ -384,14 +389,12 @@ module Final where
   v3 : List Units × List Units
   v3 = makeFrac v2
 
-  
-
   testv' : (reduce v') == (meter u× (second ^-1))
   testv' = Refl
 
   testv : reduce v == noU
   testv = Refl
-
+-}
 {-
   --Adds one to the pair if the unit is already in the list,
   -- appends a new pair to the list if none exists
@@ -571,6 +574,10 @@ module Final where
   reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
   ... | P1 | P2 = {!!}
 -}
+
+  lema : {u u1 : Units} -> Equivalent u noU -> Equivalent u1 noU -> Equivalent (u u× u1) noU
+  lema {u} {u1} p1 p2 = Equiv (u u× u1) noU {!!}
+
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
   reduceEquiv noU = Equiv noU noU Refl
   reduceEquiv meter = Equiv meter meter Refl
