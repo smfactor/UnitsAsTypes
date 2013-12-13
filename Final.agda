@@ -552,14 +552,45 @@ module Final where
   data Equivalent : Units → Units → Set where
     Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
 
-    
+{-    
   --proof that reduce x is equivalent to x
   reduceEquiv : (u : Units) → Equivalent u (reduce u)
   reduceEquiv u with cancel (fst (makeFrac u)) (snd (makeFrac u))
-  reduceEquiv u | [] , [] = {!!}
+  reduceEquiv noU | [] , [] = Equiv noU noU Refl
+  reduceEquiv meter | [] , [] = Equiv meter noU {!!}
+  reduceEquiv gram | [] , [] = {!!}
+  reduceEquiv second | [] , [] = {!!}
+  reduceEquiv ampere | [] , [] = {!!}
+  reduceEquiv kelvin | [] , [] = {!!}
+  reduceEquiv candela | [] , [] = {!!}
+  reduceEquiv mol | [] , [] = {!!}
+  reduceEquiv (u u× u₁) | [] , [] = {!!}
+  reduceEquiv (u ^-1) | [] , [] = {!!}
   reduceEquiv u | [] , b :: bs = {!!}
   reduceEquiv u | t :: ts , [] = {!!}
   reduceEquiv u | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
+  ... | P1 | P2 = {!!}
+-}
+  reduceEquiv : (u : Units) → Equivalent u (reduce u)
+  reduceEquiv noU = Equiv noU noU Refl
+  reduceEquiv meter = Equiv meter meter Refl
+  reduceEquiv gram = Equiv gram gram Refl
+  reduceEquiv second = Equiv second second Refl
+  reduceEquiv ampere = Equiv ampere ampere Refl
+  reduceEquiv kelvin = Equiv kelvin kelvin Refl
+  reduceEquiv candela = Equiv candela candela Refl
+  reduceEquiv mol = Equiv mol mol Refl
+  reduceEquiv (u u× u1) with cancel (fst (makeFrac (u u× u1))) (snd (makeFrac (u u× u1)))
+  reduceEquiv (u u× u1) | [] , [] = {!!}
+  reduceEquiv (u u× u1) | [] , b :: bs = {!!}
+  reduceEquiv (u u× u1) | t :: ts , [] = {!!}
+  reduceEquiv (u u× u1) | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
+  ... | P1 | P2 = {!!}
+  reduceEquiv (u ^-1) with cancel (fst (makeFrac (u ^-1))) (snd (makeFrac (u ^-1)))
+  reduceEquiv (u ^-1) | [] , [] = {!!}
+  reduceEquiv (u ^-1) | [] , b :: bs = {!!}
+  reduceEquiv (u ^-1) | t :: ts , [] = {!!}
+  reduceEquiv (u ^-1) | t :: ts , b :: bs with filternoU (t u× listUtoU ts) | filternoU (b u× listUtoU bs) ^-1
   ... | P1 | P2 = {!!}
 
   --proof that reduce x is in reduced form
