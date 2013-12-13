@@ -355,17 +355,20 @@ module Final where
 
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second- u× second-)))
-{-
+
     vtest : UF (meter u× second-)
     vtest = V 1.0 meter `÷ V 1.0 second
---    v2test : UF ((meter u× meter) u× (second- u× second-))
---    v2test = vtest `× vtest
---    gytest : UF (meter u× meter u× (second- u× second-))
---    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `×
---               V 1.0 meter
---    v2gy : UF (meter u× meter u× (second- u× second-))
- --   v2gy = v2test `+ gytest
+
+    v2test : UF (meter u× (second- u× (meter u× second-)))
+    v2test = vtest `× vtest
+
+    gytest : UF (second- u× (meter u× (second- u× meter)))
+    gytest = (V 2.0 noU) `× V (~ 9.8) (meter u× (second- u× second-)) `×
+               (V 1.0 meter)
+    v2gy : UF (meter u× meter u× (second- u× second-))
+    v2gy = v2test `+ gytest
 
     sqrt-test : (UF (meter u× second-))
     sqrt-test = {!`√ v2gy!}
--}
+    
+    
