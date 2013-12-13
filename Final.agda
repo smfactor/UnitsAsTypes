@@ -332,21 +332,8 @@ module Final where
 
   reduce : Units → Units
   reduce (noU u× u1) = reduce u1
-  reduce (meter u× u1) = {!cancel meter (reduce u1)!}
-  reduce (meter- u× u1) = {!!}
-  reduce (gram u× u1) = {!!}
-  reduce (gram- u× u1) = {!!}
-  reduce (second u× u1) = {!!}
-  reduce (second- u× u1) = {!!}
-  reduce (ampere u× u1) = {!!}
-  reduce (ampere- u× u1) = {!!}
-  reduce (kelvin u× u1) = {!!}
-  reduce (kelvin- u× u1) = {!!}
-  reduce (candela u× u1) = {!!}
-  reduce (candela- u× u1) = {!!}
-  reduce (mol u× u1) = {!!}
-  reduce (mol- u× u1) = {!!}
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
+  reduce (u u× u2) = cancel u (reduce u2)
   reduce u = u
 
 {-
