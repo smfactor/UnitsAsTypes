@@ -496,13 +496,13 @@ module Final where
 --  displacement : UF second → UF meter
 --  displacement t = V 0.5 noU `× g `× t `× t
 
-  compute : {u : Units} → UF u → Float
-  compute {u} (V f .u) = f
-  compute {u} (P f p .u) = prefixed f p
-  compute (x `+ x₁) = compute x f+ compute x₁
-  compute (x `- x₁) = compute x f− compute x₁
-  compute (x `× x₁) = compute x f× compute x₁
-  compute (x `÷ x₁) = compute x f÷ compute x₁
+  --compute : {u : Units} → UF u → Float
+ -- compute {u} (V f .u) = f
+--  compute {u} (P f p .u) = prefixed f p
+--  compute (x `+ x₁) = compute x f+ compute x₁
+--  compute (x `- x₁) = compute x f− compute x₁
+--  compute (x `× x₁) = compute x f× compute x₁
+--  compute (x `÷ x₁) = compute x f÷ compute x₁
 --  compute (`√ x) = √ (compute x)
 
 
