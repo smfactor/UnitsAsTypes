@@ -169,16 +169,16 @@ module Final where
   flip (U meter-) = (U meter)
   flip (U gram) = U gram-
   flip (U gram-) = U gram
-  flip (U second-) = U second-
+  flip (U second) = U second-
   flip (U second-) = U second
   flip (U ampere) = U ampere-
   flip (U ampere-) = U ampere
   flip (U kelvin) = U kelvin-
   flip (U kelvin-) = U kelvin
-  flip candela = U candela-
-  flip candela- = U candela
-  flip mol = U mol-
-  flip mol- = U mol
+  flip (U candela) = U candela-
+  flip (U candela-) = U candela
+  flip (U mol) = U mol-
+  flip (U mol-) = U mol
   flip (x1 u× x2) = (flip x1) u× (flip x2)
 
   cancel : Units → Units → Units
@@ -207,12 +207,12 @@ module Final where
   cancel (U gram-) ((U gram) u× y1) = y1
   cancel (U gram-) ((y u× y1) u× y2) = cancel (U gram-) (y u× (y1 u× y2))
   cancel (U gram-) (x u× y) = x u× cancel (U gram-) y
-  cancel (U second-) (U noU) = U second
-  cancel (U second-) (U second-) = U noU
-  cancel (U second-) (noU u× y1) = cancel (U second-) y1
-  cancel (U second-) ((U second-) u× y1) = y1
-  cancel (U second-) ((y u× y1) u× y2) = cancel (U second-) (y u× (y1 u× y2))
-  cancel (U second-) (x u× y) = x u× cancel (U second-) y
+  cancel (U second) (U noU) = U second
+  cancel (U second) (U second-) = U noU
+  cancel (U second) ((U noU) u× y1) = cancel (U second-) y1
+  cancel (U second) ((U second-) u× y1) = y1
+  cancel (U second) ((y u× y1) u× y2) = cancel (U second-) (y u× (y1 u× y2))
+  cancel (U second) (x u× y) = x u× cancel (U second-) y
   cancel (U second-) (U noU) = U second-
   cancel (U second-) (U second-) = U noU
   cancel (U second-) (U noU u× y1) = cancel (U second-) y1
@@ -296,13 +296,13 @@ module Final where
   order u = u
   
   isBase : Units → Bool
-  isBase u = ?
+  isBase u = {!!}
   
  --floats all units of type units to the front
-  order-u : Units → Units → Units
-  order-u (u u× us) = (U meter) u× (order-u us)
-  order-u (u u× us) = order us u× u
-  order-u u = u
+--  order-u : Units → Units → Units
+--  order-u x (u u× us) = (U meter) u× (order-u x us)
+ -- order-u x (x u× us) = (order-u x us) u× u
+--  order-u x u = u
 
 
   data UF : Units → Set where
@@ -365,18 +365,18 @@ module Final where
                   → UF (U noU)                             --angle
                   → UF ((U meter) u× ((U second-) u× (U second-))) -- gravitational constant
                   → UF (U meter)                           -- distance traveled
-    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ))
+    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 (U noU)) `× (v `× sin θ))
 
     max-height : UF ((U meter) u× (U second-))   --velocity
                 → UF (U noU)                               --angle
                 → UF (U meter)                             -- initial height
                 → UF ((U meter) u× ((U second-) u× (U second-))) -- gravitational constant
                 → UF (U meter)                                -- maximum height
-    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g')) `+ y₀
+    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g')) `+ y₀
 
     treduce :  Units
-    treduce = reduce (noU u× ((U meter) u× ((U second-) u× (U second-))))
-
+    treduce = reduce ((U noU) u× ((U meter) u× ((U second-) u× (U second-))))
+{-
     vtest : UF ((U meter) u× (U second-))
     vtest = V 1.0 (U meter) `÷ V 1.0 (U second)
     v2test : UF (((U meter) u× (U meter)) u× ((U second-) u× (U second-)))
@@ -388,5 +388,5 @@ module Final where
 
     sqrt-test : (UF ((U meter) u× (U second-)))
     sqrt-test = {!`√ v2gy!}
-    
+  -}  
     
