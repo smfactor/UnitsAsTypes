@@ -270,6 +270,7 @@ module Final where
 
   reduce : Units → Units
   reduce (noU u× u1) = reduce u1
+  reduce (u1 u× noU) = reduce u1
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
   reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
@@ -338,41 +339,32 @@ module Final where
 --    sqrt = {!!}
     g' : UF (meter u× (second- u× second-))
     g' = V (~ 9.8) (meter u× (second- u× second-))
-    t1 : UF (meter u× second-) → UF noU → UF (meter u× second-)
-    t1 v θ = v `× cos θ
-    t1' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF second
-    t1' v θ g = v `× cos θ `÷ g
-    t1'' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF (meter u× second-)
-    t1'' v θ g = V 2.0 noU `× (v `× sin θ)
-    t1''' : UF (meter u× second-) → UF noU → UF (meter u× second- u× second-) → UF meter
-    t1''' v θ g = {!(t1' v θ g) `× (t1'' v θ g)!}
-    sec : UF second -> UF second- -> UF noU
-    sec s s- = s `× s-
-    h-dist-trav : UF (meter u× second-)   --velocity
-                  → UF noU                               --angle
+
+    h-dist-trav : UF (meter u× second-)                --velocity
+                  → UF noU                             --angle
                   → UF (meter u× (second- u× second-)) -- gravitational constant
-                  → UF meter                                -- distance traveled
-    h-dist-trav v θ g = {! ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ)) !}
+                  → UF meter                           -- distance traveled
+    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 noU) `× (v `× sin θ))
 
     max-height : UF (meter u× second-)   --velocity
                 → UF noU                               --angle
                 → UF meter                             -- initial height
                 → UF (meter u× (second- u× second-)) -- gravitational constant
                 → UF meter                                -- maximum height
-    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g'))
+    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) noU) `× g')) `+ y₀
 
     treduce :  Units
     treduce = reduce (noU u× (meter u× (second- u× second-)))
 {-
     vtest : UF (meter u× second-)
     vtest = V 1.0 meter `÷ V 1.0 second
-    v2test : UF (meter u× meter u× (second- u× second-))
-    v2test = vtest `× vtest
-    gytest : UF (meter u× meter u× (second- u× second-))
-    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `×
-               V 1.0 meter
-    v2gy : UF (meter u× meter u× (second- u× second-))
-    v2gy = v2test `+ gytest
+--    v2test : UF ((meter u× meter) u× (second- u× second-))
+--    v2test = vtest `× vtest
+--    gytest : UF (meter u× meter u× (second- u× second-))
+--    gytest = V 2.0 noU `× V (~ 9.8) (meter u× (second- u× second-)) `×
+--               V 1.0 meter
+--    v2gy : UF (meter u× meter u× (second- u× second-))
+ --   v2gy = v2test `+ gytest
 
     sqrt-test : (UF (meter u× second-))
     sqrt-test = {!`√ v2gy!}
