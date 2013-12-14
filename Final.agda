@@ -295,14 +295,27 @@ module Final where
   order (u1 u× u2 u× u3) = {!!}
   order u = u
   
-  isBase : Units → Bool
-  isBase u = {!!}
+  check=BaseU : BaseU → BaseU → Bool
+  check=BaseU noU noU = True
+  check=BaseU meter meter = True
+  check=BaseU meter- meter- = True
+  check=BaseU gram gram = True
+  check=BaseU gram- gram- = True
+  check=BaseU second second = True
+  check=BaseU second- second- = True
+  check=BaseU ampere ampere = True
+  check=BaseU ampere- ampere- = True
+  check=BaseU kelvin kelvin = True
+  check=BaseU kelvin- kelvin- = True
+  check=BaseU candela candela = True
+  check=BaseU candela- candela- = True
+  check=BaseU mol mol = True
+  check=BaseU x y = False
   
  --floats all units of type units to the front
---  order-u : Units → Units → Units
---  order-u x (u u× us) = (U meter) u× (order-u x us)
- -- order-u x (x u× us) = (order-u x us) u× u
---  order-u x u = u
+  order-u : BaseU → Units → Units
+  order-u x (u u× us) = (order-u x us) u× u
+  order-u x u = u
 
 
   data UF : Units → Set where
