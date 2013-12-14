@@ -34,6 +34,7 @@ module Final where
 
   infix 10 ~_
 
+  --absolute value
   abs : Float → Float
   abs x with primFloatLess x 0.0 
   abs x | True = ~ x
@@ -56,6 +57,8 @@ module Final where
   √ x = newtonian x 0.0000001 2.0
 -}
   
+  --datatype for base units
+  -- "-" at the end represents ^-1
   data BaseU : Set where
     noU      : BaseU
     meter    : BaseU
@@ -72,14 +75,16 @@ module Final where
     candela- : BaseU
     mol      : BaseU
     mol-     : BaseU
-    
+  
+  --datatype for complex units
+  --all units can be created by multiplying basic (including inverse) units together
   data Units : Set where
     U        : BaseU → Units
     _u×_     : Units → Units → Units
 
   infixl 10 _u×_
 
-
+  --datatype for prefixes
   data Prefix : Set where
     yotta : Prefix
     zetta : Prefix
@@ -102,6 +107,7 @@ module Final where
     zepto : Prefix
     yocto : Prefix
 
+  --prefixed takes a float and a prefix and multiplies by the corresponding factor of 10
   prefixed : Float → Prefix → Float
   prefixed f yotta = f f× 1.0e24
   prefixed f zetta = f f× 1.0e21
@@ -124,6 +130,7 @@ module Final where
   prefixed f zepto = f f÷ 1.0e21
   prefixed f yocto = f f÷ 1.0e24
 
+  --removes excess noU's
   filternoU : Units → Units
   filternoU (x u× (U noU)) = filternoU x
   filternoU (U noU u× x) = filternoU x
@@ -134,6 +141,7 @@ module Final where
   ... | u1 | u2 = u1 u× u2
   filternoU x = x
 
+  --inverts a unit (changes u to 1/u)
   flip : Units → Units
   flip (U noU) = U noU
   flip (U meter) = (U meter-)
@@ -152,6 +160,10 @@ module Final where
   flip (U mol-) = U mol
   flip (x1 u× x2) = (flip x1) u× (flip x2)
 
+  --cancels u with 1/u
+  --recursion permissions could be used to convince the termination checker that
+  --  this does in fact terminate (just like suffix in hw7) we dig deaper into
+  --  the first term of x until we find a base unit then cancel appropriately
   cancel : Units → Units → Units
   cancel (U noU) x = x
   cancel (U meter) (U noU) = (U meter)
@@ -247,6 +259,7 @@ module Final where
   reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
   
+  --checks if two base units are equal
   check=BaseU : BaseU → BaseU → Bool
   check=BaseU noU noU = True
   check=BaseU meter meter = True
@@ -273,12 +286,13 @@ module Final where
   order-u x u = u
 
   --imposes an ordering on units
+  --this is needed in order to add, for example (meter u× second-) and (second- u× meter)
   order : Units → Units
   order u = order-u noU (order-u meter
               (order-u mol- (order-u candela- (order-u kelvin- (order-u ampere- (order-u second- (order-u gram- (order-u meter- 
                (order-u mol (order-u candela (order-u kelvin (order-u ampere (order-u second (order-u gram u))))))))))))))
 
-
+  --datatype for united-floats and expressions using them
   data UF : Units → Set where
     V    : (f : Float) → (U : Units) → UF (order U)
     P    : (f : Float) → (p : Prefix) → (U : Units) → UF (order U)
@@ -293,6 +307,7 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 
+  --function which computes the value of an united-float-expression
   compute : {u : Units} → UF u → Float
   compute (V f _) = f
   compute (P f p _) = prefixed f p
@@ -302,13 +317,7 @@ module Final where
   compute (x `÷ x₁) = compute x f÷ compute x₁
 --  compute (`√ x) = √ (compute x)
 
-{-
-  data Same : Units → Units → Set where
-    Refl  : (u : Units) → (u : Units) → Same u u
-    Sym   : (u1 : Units) → (u2 : Units) → reduce u1 == reduce u2 → Same (reduce u1) (reduce u2)
-    Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
--}
-
+  --datatype for showint that two units are equivalent
   data Equivalent : Units → Units → Set where
     EqU : (u1 : Units) → (u2 : Units) → (order (reduce u1)) == (order (reduce u2)) → Equivalent u1 u2
 
@@ -316,7 +325,9 @@ module Final where
   test-EqU = EqU (U meter u× U meter-) (U noU) Refl
 
   postulate
+    --proof that reduce u is in fact reduced
     reducedreduced : (u : Units) → reduce u == reduce (reduce u)
+    --indirect proof that reduce u is in fact reduced
     ord-r-r :  (u : Units) → order-u noU
       (order-u meter
        (order-u mol-
@@ -346,48 +357,53 @@ module Final where
                 (order-u kelvin
                  (order-u ampere
                   (order-u second (order-u gram (reduce (reduce u))))))))))))))))
---  reducedreduced u = {!!}
+
+  --proof that u is equivalent to reduce u
   reduced= : (u : Units) → Equivalent u (reduce u)
   reduced= u = EqU u (reduce u) (ord-r-r u) 
 
-  --proof that u is equivalent to reduce u
-  reduced= : (u1 : Units) → Equivalent u1 (reduce u1)
-  reduced= u1 = {!equiv (order u1) (order (reduce u1)) Refl!}
 
 
---------- Library for example code ---------------------------------------------
+--------------------------------------------------------------------------------
+------------ Library for example code ------------------------------------------
+--------------------------------------------------------------------------------
   --NOTE: sin and cos are in radians!
   cos : UF (U noU) → UF (U noU)
   cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) (U noU)
 
   sin : UF (U noU) → UF (U noU)
   sin θ = V (primSin (compute θ)) (U noU)
---  sqrt : {u : Units} → UF u → UF u
---  sqrt = {!!}
+
+  --gravitational constant on earth
   g : UF (order ((U meter) u× ((U second-) u× (U second-))))
   g = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
 
-  h-dist-trav : UF (order ((U meter) u× (U second-)))                    --velocity
+  --function which finds the distance a projectile will travel when launched 
+  --  with a given initial velocity, launch angle, and gravitational constant. 
+  --  (Assumes initial height is 0)
+  proj-dist-trav : UF (order ((U meter) u× (U second-)))                  --velocity
                 → UF (U noU)                                             --angle (in radians)
                 → UF (order ((U meter) u× ((U second-) u× (U second-)))) -- gravitational constant
                 → UF (U meter)                                           -- distance traveled
-  h-dist-trav v θ g = ((v `× cos θ) `÷ g) `× ((V 2.0 (U noU)) `× (v `× sin θ))
+  proj-dist-trav v θ g = ((v `× cos θ) `÷ g) `× ((V 2.0 (U noU)) `× (v `× sin θ))
 
-  max-height : UF (order ((U meter) u× (U second-)))                    --velocity
+  --function which finds the maximum height of a projectile launched with a
+  --  given initial velocity, launch angle, initial height, and gravitational 
+  --  constant.
+  proj-max-height : UF (order ((U meter) u× (U second-)))               --velocity
                → UF (U noU)                                             --angle (in radians)
                → UF (U meter)                                           -- initial height
                → UF (order ((U meter) u× ((U second-) u× (U second-)))) -- gravitational constant
                → UF (U meter)                                           -- maximum height
-  max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g)) `+ y₀
+  proj-max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g)) `+ y₀
 
+  --a few values for testing: max height of projectile launched up with initial
+  --  velocity of 1 m/s
   h1ms : UF (U meter)
-  h1ms = max-height (V 1.0 ((U meter) u× (U second-))) (V (π f÷ 2.0) (U noU)) (V 0.0 (U meter)) g
+  h1ms = proj-max-height (V 1.0 ((U meter) u× (U second-))) (V (π f÷ 2.0) (U noU)) (V 0.0 (U meter)) g
 
   h1msf : Float
   h1msf = compute h1ms
-
-  treduce : Units
-  treduce = reduce ((U noU) u× ((U meter) u× ((U second-) u× (U second-))))
 
   vtest : UF (order ((U meter) u× (U second-)))
   vtest = V 1.0 (U meter) `÷ V 1.0 (U second)
