@@ -297,8 +297,8 @@ module Final where
   order-u : BaseU → Units → Units
   order-u x ((U u) u× us) with check=BaseU x u
   ... | True = U u u× order-u x us
-  ... | False = order-u x us u× U u
-  order-u x (u u× us) = (order-u x u) u× u
+  ... | False = (order-u x us) u× (U u)
+  order-u x (u u× u1 u× us) = order-u x (u u× (u1 u× us))
   order-u x u = u
 
   order : Units → Units
