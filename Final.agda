@@ -341,13 +341,46 @@ module Final where
 -}
 
   data Equivalent : Units → Units → Set where
-    equiv : (u1 : Units) → (u2 : Units) → (order u1) == (order u2) → Equivalent u1 u2
+    EqU : (u1 : Units) → (u2 : Units) → (order (reduce u1)) == (order (reduce u2)) → Equivalent u1 u2
 
-  test-equiv : Equivalent ((U meter) u× (U second)) ((U second) u× (U meter))
-  test-equiv = equiv (U meter u× U second) (U second u× U meter) Refl
+  test-EqU : Equivalent ((U meter) u× (U meter-)) (U noU)
+  test-EqU = EqU (U meter u× U meter-) (U noU) Refl
 
-  reduced= : (u1 : Units) → Equivalent u1 (reduce u1)
-  reduced= u1 = {!equiv (order u1) (order (reduce u1)) Refl!}
+  postulate
+    reducedreduced : (u : Units) → reduce u == reduce (reduce u)
+    ord-r-r :  (u : Units) → order-u noU
+      (order-u meter
+       (order-u mol-
+        (order-u candela-
+         (order-u kelvin-
+          (order-u ampere-
+           (order-u second-
+            (order-u gram-
+             (order-u meter-
+              (order-u mol
+               (order-u candela
+                (order-u kelvin
+                 (order-u ampere
+                  (order-u second (order-u gram (reduce u)))))))))))))))
+      ==
+      order-u noU
+      (order-u meter
+       (order-u mol-
+        (order-u candela-
+         (order-u kelvin-
+          (order-u ampere-
+           (order-u second-
+            (order-u gram-
+             (order-u meter-
+              (order-u mol
+               (order-u candela
+                (order-u kelvin
+                 (order-u ampere
+                  (order-u second (order-u gram (reduce (reduce u))))))))))))))))
+--  reducedreduced u = {!!}
+  reduced= : (u : Units) → Equivalent u (reduce u)
+  reduced= u = EqU u (reduce u) (ord-r-r u) 
+
 
   --proof that reduce x is in reduced form
   reduced-X : {!!}
