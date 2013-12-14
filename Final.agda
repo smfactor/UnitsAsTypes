@@ -275,25 +275,6 @@ module Final where
   reduce ((u u× u1) u× u2) = reduce (u u× (u1 u× u2))
   reduce (u u× u1) = cancel u (reduce u1)
   reduce u = u
-
-  order : Units → Units
-  order ((U noU) u× u2) = order u2
-  order ((U meter) u× u2) = (U meter) u× order u2
-  order ((U meter-) u× u2) = order u2 u× (U meter-)
-  order ((U gram) u× u2) = {!!}
-  order ((U gram-) u× u2) = {!!}
-  order ((U second) u× u2) = {!!}
-  order ((U second-) u× u2) = {!!}
-  order ((U ampere) u× u2) = {!!}
-  order ((U ampere-) u× u2) = {!!}
-  order ((U kelvin) u× u2) = {!!}
-  order ((U kelvin-) u× u2) = {!!}
-  order ((U candela) u× u2) = {!!}
-  order ((U candela-) u× u2) = {!!}
-  order ((U mol) u× u2) = {!!}
-  order ((U mol-) u× u2) = {!!}
-  order (u1 u× u2 u× u3) = {!!}
-  order u = u
   
   check=BaseU : BaseU → BaseU → Bool
   check=BaseU noU noU = True
@@ -316,6 +297,16 @@ module Final where
   order-u : BaseU → Units → Units
   order-u x (u u× us) = (order-u x us) u× u
   order-u x u = u
+
+  order : Units → Units
+  order u = order-u noU (order-u meter
+              (order-u mol-
+               (order-u candela-
+                (order-u kelvin-
+                 (order-u ampere- (order-u second- (order-u gram- (order-u meter- (order-u mol
+               (order-u candela
+                (order-u kelvin
+                 (order-u ampere (order-u second (order-u gram u))))))))))))))
 
 
   data UF : Units → Set where
