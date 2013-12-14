@@ -314,7 +314,10 @@ module Final where
   
  --floats all units of type units to the front
   order-u : BaseU → Units → Units
-  order-u x (u u× us) = (order-u x us) u× u
+  order-u x ((U u) u× us) with check=BaseU x u
+  ... | True = U u u× order-u x us
+  ... | False = order-u x us u× U u
+  order-u x (u u× us) = (order-u x u) u× u
   order-u x u = u
 
 
