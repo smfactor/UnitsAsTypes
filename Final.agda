@@ -16,9 +16,6 @@ module Final where
     primFloatDiv     : Float → Float → Float
     primSin          : Float → Float
     primFloatLess    : Float → Float → Bool
-
---  open Nat using (_+_)
-  open List using (_++_ ; [_] ; ++-assoc)
   
   _f+_ : Float → Float → Float
   x f+ y = primFloatPlus x y
@@ -44,17 +41,8 @@ module Final where
   
   π : Float
   π = 3.141592653589793238462643383279502884197169399375105820974944592307816406286
-
-  cosine : Float → Float
-  cosine θ = primSin ((π f÷ 2.0) f− θ)
  
-
-  funct : Float → Float
-  funct x = cosine x f− x
-
-  derivative : Float → Float → Float
-  derivative x h = ((funct (x f+ h) f− funct (x f− h)) f÷ (2.0 f× h))
-
+{-
   --approximation algorithm for square roots of floats
   -- x : the number to take the square root of t ≥ 0
   -- ε : the relative error tolerance
@@ -66,6 +54,7 @@ module Final where
 
   √ : Float → Float
   √ x = newtonian x 0.0000001 2.0
+-}
   
   data BaseU : Set where
     noU      : BaseU
@@ -134,24 +123,6 @@ module Final where
   prefixed f atto = f f÷ 1.0e18
   prefixed f zepto = f f÷ 1.0e21
   prefixed f yocto = f f÷ 1.0e24
-
-  
-
-{- Suffix xs ys means that xs is a suffix of ys -}
-
-  data Suffix {A : Set} : List A → List A → Set where
-    Stop : ∀ {x xs} → Suffix xs (x :: xs)
-    Drop : ∀ {y xs ys} → Suffix xs ys → Suffix xs (y :: ys)
-
-  {- TASK 2.1 : Show that suffix is transitive. -}
-  suffix-trans : {A : Set} → {xs ys zs : List A} → Suffix xs ys → Suffix ys zs → Suffix xs zs
-  suffix-trans Stop Stop = Drop Stop
-  suffix-trans Stop (Drop q) =  Drop (suffix-trans Stop q)
-  suffix-trans (Drop p) Stop = Drop (suffix-trans p Stop)
-  suffix-trans (Drop p) (Drop q) = Drop (suffix-trans p (suffix-trans Stop q))
-
-  data RecursionPermission {A : Set} : List A → Set where
-    CanRec : {ys : List A} → ((xs : List A) → Suffix xs ys → RecursionPermission xs) → RecursionPermission ys
 
   filternoU : Units → Units
   filternoU (x u× (U noU)) = filternoU x
@@ -293,7 +264,7 @@ module Final where
   check=BaseU mol mol = True
   check=BaseU x y = False
   
- --floats all units of type units to the front
+ --floats all units of type BaseU to the front
   order-u : BaseU → Units → Units
   order-u x ((U u) u× us) with check=BaseU x u
   ... | True = U u u× order-u x us
@@ -301,6 +272,7 @@ module Final where
   order-u x ((u u× u1) u× us) = order-u x (u u× (u1 u× us)) 
   order-u x u = u
 
+  --imposes an ordering on units
   order : Units → Units
   order u = order-u noU (order-u meter
               (order-u mol- (order-u candela- (order-u kelvin- (order-u ampere- (order-u second- (order-u gram- (order-u meter- 
@@ -320,9 +292,6 @@ module Final where
   infixl 8 _`÷_
   infixl 4 _`+_
   infixl 4 _`-_
-
---  displacement : UF (U second-) → UF (U meter)
---  displacement t = V 0.5 (U noU) `× g `× t `× t
 
   compute : {u : Units} → UF u → Float
   compute (V f _) = f
@@ -346,19 +315,20 @@ module Final where
   test-equiv : Equivalent ((U meter) u× (U second)) ((U second) u× (U meter))
   test-equiv = equiv (U meter u× U second) (U second u× U meter) Refl
 
+  --proof that u is equivalent to reduce u
   reduced= : (u1 : Units) → Equivalent u1 (reduce u1)
   reduced= u1 = {!equiv (order u1) (order (reduce u1)) Refl!}
 
   --proof that reduce x is in reduced form
-  reduced-X : {!!}
-  reduced-X = {!!}
+  reduced-X : (u : Units) → reduce u == (reduce (reduce u))
+  reduced-X u = {!!}
 
 
--- Library for example of code
---  module Projectile where
+--------- Library for example code ---------------------------------------------
   --NOTE: sin and cos are in radians!
   cos : UF (U noU) → UF (U noU)
   cos θ = V (primSin (primFloatMinus (primFloatDiv π 2.0) (compute θ))) (U noU)
+
   sin : UF (U noU) → UF (U noU)
   sin θ = V (primSin (compute θ)) (U noU)
 --  sqrt : {u : Units} → UF u → UF u
@@ -367,16 +337,16 @@ module Final where
   g = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
 
   h-dist-trav : UF (order ((U meter) u× (U second-)))                    --velocity
-                → UF (U noU)                                     --angle (in radians)
+                → UF (U noU)                                             --angle (in radians)
                 → UF (order ((U meter) u× ((U second-) u× (U second-)))) -- gravitational constant
-                → UF (U meter)                                   -- distance traveled
+                → UF (U meter)                                           -- distance traveled
   h-dist-trav v θ g = ((v `× cos θ) `÷ g) `× ((V 2.0 (U noU)) `× (v `× sin θ))
 
-  max-height : UF (order ((U meter) u× (U second-)))   --velocity
-               → UF (U noU)                               --angle (in radians)
-               → UF (U meter)                             -- initial height
+  max-height : UF (order ((U meter) u× (U second-)))                    --velocity
+               → UF (U noU)                                             --angle (in radians)
+               → UF (U meter)                                           -- initial height
                → UF (order ((U meter) u× ((U second-) u× (U second-)))) -- gravitational constant
-               → UF (U meter)                                -- maximum height
+               → UF (U meter)                                           -- maximum height
   max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g)) `+ y₀
 
   h1ms : UF (U meter)
