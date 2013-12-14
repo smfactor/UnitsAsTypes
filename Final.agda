@@ -322,10 +322,10 @@ module Final where
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
---  infixl 8 _`÷_
+  infixl 8 _`÷_
   infixl 4 _`+_
   infixl 4 _`-_
---  test : UF (
+
   g : UF ((U meter) u× ((U second-) u× (U second-)))
   g = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
 
