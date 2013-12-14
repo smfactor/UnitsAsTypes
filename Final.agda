@@ -298,27 +298,22 @@ module Final where
   order-u x ((U u) u× us) with check=BaseU x u
   ... | True = U u u× order-u x us
   ... | False = order-u x us u× U u
-  order-u x (u u× us) = (order-u x u) u× u
+  order-u x ((u u× u1) u× us) = order-u x (u u× (u1 u× us)) --(order-u x u) u× us
   order-u x u = u
 
   order : Units → Units
   order u = order-u noU (order-u meter
-              (order-u mol-
-               (order-u candela-
-                (order-u kelvin-
-                 (order-u ampere- (order-u second- (order-u gram- (order-u meter- (order-u mol
-               (order-u candela
-                (order-u kelvin
-                 (order-u ampere (order-u second (order-u gram u))))))))))))))
+              (order-u mol- (order-u candela- (order-u kelvin- (order-u ampere- (order-u second- (order-u gram- (order-u meter- 
+               (order-u mol (order-u candela (order-u kelvin (order-u ampere (order-u second (order-u gram u))))))))))))))
 
 
   data UF : Units → Set where
-    V    : (f : Float) → (U : Units) → UF U
-    P    : (f : Float) → (p : Prefix) → (U : Units) → UF U
+    V    : (f : Float) → (U : Units) → UF (order U)
+    P    : (f : Float) → (p : Prefix) → (U : Units) → UF (order U)
     _`+_ : {U : Units} → UF U → UF U → UF U
     _`-_ : {U : Units} → UF U → UF U → UF U
-    _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (filternoU (reduce (U1 u× U2)))
-    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (filternoU (reduce (U1 u× flip U2)))
+    _`×_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (order (filternoU (reduce (U1 u× U2))))
+    _`÷_ : {U1 U2 : Units} → UF U1 → UF U2 → UF (order (filternoU (reduce (U1 u× flip U2))))
 --    `√_  : {U : Units} → UF (U u× U) → UF U
 
   infixl 8 _`×_
@@ -326,15 +321,12 @@ module Final where
   infixl 4 _`+_
   infixl 4 _`-_
 
-  g : UF ((U meter) u× ((U second-) u× (U second-)))
-  g = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
-
 --  displacement : UF (U second-) → UF (U meter)
 --  displacement t = V 0.5 (U noU) `× g `× t `× t
 
   compute : {u : Units} → UF u → Float
-  compute {u} (V f .u) = f
-  compute {u} (P f p .u) = prefixed f p
+  compute (V f _) = f
+  compute (P f p _) = prefixed f p
   compute (x `+ x₁) = compute x f+ compute x₁
   compute (x `- x₁) = compute x f− compute x₁
   compute (x `× x₁) = compute x f× compute x₁
@@ -365,28 +357,28 @@ module Final where
     sin θ = V (primSin (compute θ)) (U noU)
 --    sqrt : {u : Units} → UF u → UF u
 --    sqrt = {!!}
-    g' : UF ((U meter) u× ((U second-) u× (U second-)))
-    g' = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
+    g : UF (order ((U meter) u× ((U second-) u× (U second-))))
+    g = V (~ 9.8) ((U meter) u× ((U second-) u× (U second-)))
 
-    h-dist-trav : UF ((U meter) u× (U second-))                --velocity
-                  → UF (U noU)                             --angle
+    h-dist-trav : UF ((U meter) u× (U second-))                    --velocity
+                  → UF (U noU)                                     --angle
                   → UF ((U meter) u× ((U second-) u× (U second-))) -- gravitational constant
-                  → UF (U meter)                           -- distance traveled
-    h-dist-trav v θ g = ((v `× cos θ) `÷ g') `× ((V 2.0 (U noU)) `× (v `× sin θ))
+                  → UF (U meter)                                   -- distance traveled
+    h-dist-trav v θ g = ((v `× cos θ) `÷ g) `× ((V 2.0 (U noU)) `× (v `× sin θ))
 
     max-height : UF ((U meter) u× (U second-))   --velocity
                 → UF (U noU)                               --angle
                 → UF (U meter)                             -- initial height
                 → UF ((U meter) u× ((U second-) u× (U second-))) -- gravitational constant
                 → UF (U meter)                                -- maximum height
-    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g')) `+ y₀
+    max-height v θ y₀ g = ((v `× v `× sin θ `× sin θ) `÷ ((V (~ 2.0) (U noU)) `× g)) -- `+ y₀
 
     treduce :  Units
     treduce = reduce ((U noU) u× ((U meter) u× ((U second-) u× (U second-))))
 {-
     vtest : UF ((U meter) u× (U second-))
     vtest = V 1.0 (U meter) `÷ V 1.0 (U second)
-    v2test : UF (((U meter) u× (U meter)) u× ((U second-) u× (U second-)))
+    v2test : UF (((U second-) u× (U second-)) u× ((U meter) u× (U meter)))
     v2test = vtest `× vtest
     gytest : UF ((U meter) u× (U meter) u× ((U second-) u× (U second-)))
     gytest = V 2.0 (U noU) `× V (~ 9.8) ((U meter) u× ((U second-) u× (U second-))) `× V 1.0 (U meter)
@@ -394,6 +386,5 @@ module Final where
     v2gy = v2test `+ gytest
 
     sqrt-test : (UF ((U meter) u× (U second-)))
-    sqrt-test = {!`√ v2gy!}
-  -}  
-    
+    sqrt-test = {!`√ v2gy!}   
+-}
