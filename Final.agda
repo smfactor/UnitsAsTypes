@@ -17,9 +17,9 @@ module Final where
     primSin          : Float → Float
     primFloatLess    : Float → Float → Bool
 
---  open Nat using (_+_)
   open List using (_++_ ; [_] ; ++-assoc)
   
+  {- Some definitions for floating point operations -}
   _f+_ : Float → Float → Float
   x f+ y = primFloatPlus x y
  
@@ -60,9 +60,9 @@ module Final where
   √ : Float → Float
   √ x = newtonian x 0.0000001 2.0
   
-   
+  {- datatype for SI units -}  
   data Units : Set where
-    noU     : Units
+    noU     : Units    --units for not units
     meter   : Units
     gram    : Units
     second  : Units
@@ -70,13 +70,13 @@ module Final where
     kelvin  : Units
     candela : Units
     mol     : Units
-    _u×_    : Units → Units → Units
-    _^-1    : Units → Units
+    _u×_    : Units → Units → Units     --multiplication of two units
+    _^-1    : Units → Units             -- inversion of a unit
 
   infixl 10 _u×_
   infixl 11 _^-1    
                                                                                          
-   
+  {- datatype for prefixes to SI units -}
   data Prefix : Set where
     yotta : Prefix
     zetta : Prefix
@@ -99,6 +99,7 @@ module Final where
     zepto : Prefix
     yocto : Prefix
 
+  {- Converts a prefixed float to a float of a base unit -}
   prefixed : Float → Prefix → Float
   prefixed f yotta = f f× 1.0e24
   prefixed f zetta = f f× 1.0e21
@@ -122,11 +123,14 @@ module Final where
   prefixed f yocto = f f÷ 1.0e24
 
 
+  {- Helper functions for reduce -}
 
+  {- converts a list of units into a single unit -}
   listUtoU : List Units → Units
   listUtoU [] = noU
   listUtoU (x :: xs) = x u× listUtoU xs
 
+  {- checks if two units are equal -}
   checkEqual : Units → Units → Bool
   checkEqual noU noU = True
   checkEqual meter meter = True
@@ -146,6 +150,7 @@ module Final where
   checkEqual ((x ^-1) ^-1) y = checkEqual x y
   checkEqual x y = False
 
+  
   cancelS : Units → List Units → (Bool × List Units)
   cancelS x [] = False , []
   cancelS noU ys = True , ys
@@ -156,6 +161,8 @@ module Final where
   cancelS x (y :: ys) | False | True , ys' = True , y :: ys'
   cancelS x (y :: ys) | False | False , ys' = False , y :: ys'
 
+  {- Takes a list of the units on top and a list of the units on bottom and cancels
+     them to produce of a tuple of a list of top units and a list of bottom units -}
   cancel : List Units → List Units → (List Units × List Units)
   cancel [] b = [] , b
   cancel (x :: ts) b with cancelS x b
@@ -163,6 +170,7 @@ module Final where
   cancel (x :: ts) b | False , _ with cancel ts b
   cancel (x :: ts) b | False , _ | t' , b' = x :: t' , b'
 
+  {- Takes a units and returns a list of top units and a list of bottom units -}
   makeFrac : Units → List Units × List Units
   makeFrac (x ^-1 u× y ^-1) with makeFrac x | makeFrac y
   ... | tx , bx | ty , by = bx ++ by , tx ++ ty
@@ -175,7 +183,8 @@ module Final where
   makeFrac (x ^-1) with makeFrac x 
   ... | t , b = b , t
   makeFrac x = x :: [] , []
-
+  
+  {- removes all noU from a units -}
   filternoU : Units → Units
   filternoU (x u× noU) = filternoU x
   filternoU (noU u× x) = filternoU x
@@ -189,6 +198,7 @@ module Final where
   filternoU (x ^-1) = filternoU x ^-1
   filternoU x = x
 
+  {- reduces a unit -}
   reduce : Units → Units 
   reduce x with makeFrac x
   reduce x | t , b with cancel t b
