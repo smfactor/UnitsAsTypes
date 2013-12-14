@@ -43,7 +43,7 @@ module Final where
   abs x | False = x
   
   π : Float
-  π = 3.1415926
+  π = 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 
   cosine : Float → Float
   cosine θ = primSin ((π f÷ 2.0) f− θ)
@@ -340,9 +340,14 @@ module Final where
     Trans : {u1 u2 u3 : Units} → reduce u1 == reduce u2 → reduce u2 == reduce u3 → Same (reduce u1) (reduce u3)
 -}
 
---  Equivalent : Set where
---  data Equivalent : Units → Units → Set where
-  --  Equiv : (u1 : Units) → (u2 : Units) → count u1 == count u2 → Equivalent u1 u2
+  data Equivalent : Units → Units → Set where
+    equiv : (u1 : Units) → (u2 : Units) → (order u1) == (order u2) → Equivalent u1 u2
+
+  test-equiv : Equivalent ((U meter) u× (U second)) ((U second) u× (U meter))
+  test-equiv = equiv (U meter u× U second) (U second u× U meter) Refl
+
+  reduced= : (u1 : Units) → Equivalent u1 (reduce u1)
+  reduced= u1 = {!equiv (order u1) (order (reduce u1)) Refl!}
 
   --proof that reduce x is in reduced form
   reduced-X : {!!}
